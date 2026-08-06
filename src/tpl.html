@@ -501,30 +501,28 @@ input[type=range]{width:118px;accent-color:var(--color-accent);font-family:inher
 .dseg button{flex:1;background:var(--color-background-muted);border:0;border-radius:var(--radius-full);padding:9px 0;
   font-size:var(--font-size-sm);font-weight:var(--font-weight-semibold);font-family:inherit;color:var(--color-text-secondary)}
 .dseg button.on{background:var(--color-accent);color:var(--color-on-accent)}
-/* 首页三段切换：吸顶固定，滚动时一直可见。
-   main 左右有 padding，用负 margin 撑通栏再补回来 */
-.hseg{
-  position:sticky;top:0;z-index:20;
+/* 首页三段切换：Astryx Tabs 风格 —— 文字标签 + 底部滑动下划线指示器。
+   吸顶固定，滚动时一直可见。main 左右有 padding，负 margin 撑通栏再补回 */
+.htabs{
+  position:sticky;top:0;z-index:20;display:flex;position:relative;
   margin:0 calc(var(--spacing-5) * -1) var(--spacing-4);
-  padding:10px var(--spacing-5) 12px;
-  background:color-mix(in srgb, var(--color-background-body) 88%, transparent);
+  padding:6px var(--spacing-5) 0;
+  background:color-mix(in srgb, var(--color-background-body) 90%, transparent);
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   border-bottom:var(--border-width) solid var(--color-border);
 }
-/* Astryx Segmented Control：浅底胶囊容器，选中项白底 + 阴影浮起 */
-.hseg-box{
-  display:flex;gap:2px;padding:4px;border-radius:var(--radius-full);
-  background:var(--color-background-muted);border:var(--border-width) solid var(--color-border);
+.htabs button{
+  flex:1;border:0;background:none;padding:12px 0 11px;font-family:inherit;
+  font-size:var(--font-size-sm);font-weight:var(--font-weight-semibold);
+  color:var(--color-text-secondary);letter-spacing:.02em;position:relative;
+  transition:color var(--duration-fast) var(--ease-standard);
 }
-.hseg-box button{
-  flex:1;border:0;border-radius:var(--radius-full);padding:8px 0;
-  font-size:var(--font-size-sm);font-weight:var(--font-weight-semibold);font-family:inherit;
-  color:var(--color-text-secondary);background:transparent;
-  transition:background var(--duration-fast) var(--ease-standard),
-             color var(--duration-fast) var(--ease-standard),
-             box-shadow var(--duration-fast) var(--ease-standard);
+.htabs button.on{color:var(--color-brand)}
+.htabs .hind{
+  position:absolute;bottom:-1px;width:33.333%;height:3px;border-radius:var(--radius-full);
+  background:var(--color-brand);
+  transition:left var(--duration-medium) var(--ease-standard);
 }
-.hseg-box button.on{background:var(--color-background-card);color:var(--color-text-primary);box-shadow:var(--shadow-low)}
 /* 切换标签时的轻微滑入 */
 @keyframes hslide{from{opacity:.35;transform:translateX(20px)}to{opacity:1;transform:none}}
 .htrans{animation:hslide var(--duration-medium) var(--ease-standard)}
@@ -1076,10 +1074,14 @@ view.addEventListener('touchend', e => {
 /* 「学习」页收拢成三段：总览（进度+今日任务）、语法、主题。
    点标签或左右滑动切换。homeTab 0/1/2。 */
 let homeTab = 0;
+function updateHind() {
+  const h = $('hind'); if (h) h.style.left = (homeTab * 33.333) + '%';
+  view.querySelectorAll('.htabs [data-ht]').forEach((b, i) => b.classList.toggle('on', i === homeTab));
+}
 function setHomeTab(i) {
   if (i === homeTab || i < 0 || i > 2) return;
   homeTab = i;
-  if (curView === 'home') renderHome();
+  if (curView === 'home') { updateHind(); view.scrollTop = 0; renderHome(); }
 }
 function renderHome() {
   /* 语法课数据按需加载：JSON 就绪后若还在首页就重绘（仅成功时） */
@@ -1093,11 +1095,14 @@ function renderHome() {
   const C = 2 * Math.PI * 35;
   const byArt = a => NOUNS.filter(w => w.art === a).length;
 
-  const seg = `<div class="hseg"><div class="hseg-box">
-    <button data-ht="0" class="${homeTab === 0 ? 'on' : ''}">总览</button>
-    <button data-ht="1" class="${homeTab === 1 ? 'on' : ''}">语法</button>
-    <button data-ht="2" class="${homeTab === 2 ? 'on' : ''}">主题</button>
-  </div></div>`;
+  /* 标签条只建一次，内容单独放 #homeBody —— 这样指示器能平滑滑动，切换不重建标签 */
+  if (!$('homeBody')) {
+    view.innerHTML = `<div class="htabs">
+      <button data-ht="0">总览</button><button data-ht="1">语法</button><button data-ht="2">主题</button>
+      <span class="hind" id="hind"></span>
+    </div><div id="homeBody"></div>`;
+    view.querySelectorAll('.htabs [data-ht]').forEach(b => b.onclick = () => setHomeTab(+b.dataset.ht));
+  }
 
   let body;
   if (homeTab === 0) body = `
@@ -1117,14 +1122,22 @@ function renderHome() {
     </div>
   </div>
 
-  <div class="sec-t">从这里开始</div>
+  <div class="sec-t">零基础 · 从这里开始</div>
   <button class="card chap" id="goLaut">
     <div class="no" style="background:var(--color-brand)">0</div>
     <div class="bd">
       <div class="t">发音关</div>
-      <div class="e">字母表 · 拼读规则 · 听辨训练 —— 零基础第一站</div>
+      <div class="e">字母表 · 拼读规则 · 听辨训练 —— 第一站</div>
     </div>
     <div class="n">${DATA.aussprache.regeln.reduce((n, g) => n + g.items.length, 0)} 条</div>
+  </button>
+  <button class="card chap" id="goNum">
+    <span class="no ki" style="background:var(--color-brand)">${K.num}</span>
+    <div class="bd">
+      <div class="t">数字 · 0-100</div>
+      <div class="e">听写 / 译写练习，专治 einundzwanzig 倒读</div>
+    </div>
+    <div class="n">TTS 出题</div>
   </button>
 
   <div class="sec-t">今日任务</div>
@@ -1175,9 +1188,9 @@ function renderHome() {
   </div>
   <div class="credit">点任意主题直接开始背这组词</div>`;
 
-  view.innerHTML = seg + `<div class="htrans">${body}</div>`;
+  $('homeBody').innerHTML = `<div class="htrans">${body}</div>`;
+  updateHind();
 
-  view.querySelectorAll('[data-ht]').forEach(b => b.onclick = () => setHomeTab(+b.dataset.ht));
   view.querySelectorAll('[data-gram]').forEach(b => b.onclick = () => openGram(b.dataset.gram));
   view.querySelectorAll('[data-thema]').forEach(b => b.onclick = () => {
     const t = DATA.themen.find(x => x.c === b.dataset.thema);
@@ -1193,6 +1206,8 @@ function renderHome() {
   if (gl) gl.onclick = () => { curView = 'laut';
     [...$('tabs').children].forEach(x => x.classList.toggle('on', x.dataset.t === 'laut'));
     view.scrollTop = 0; render(); };
+  const gn2 = $('goNum');
+  if (gn2) gn2.onclick = () => openDrill('num');
   const gd = $('goDue');
   if (gd) gd.onclick = () => {
     const q = ALL.filter(isDue).sort((a, b) => S.prog[a.w].due - S.prog[b.w].due);
