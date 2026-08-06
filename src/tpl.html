@@ -671,6 +671,20 @@ function applyTheme() {
 }
 /* Koboyo 手绘图标（构建时注入 src/icons/*.svg） */
 const K = __ICONS__;
+/* 本地字母名语音（构建时注入 src/alphabet_audio.json）：离线标准音，点击字母优先播放 */
+const LA = __ALPH_AUDIO__;
+let laAudio = null;
+function speakLocal(kind, letter, text) {
+  if (kind === 'letter' && LA[letter]) {
+    stopSpeak();
+    try {
+      laAudio = new Audio('data:audio/mp4;base64,' + LA[letter]);
+      laAudio.play().catch(() => {});
+    } catch (e) {}
+    return true;
+  }
+  return false;
+}
 /* 线性图标（与 Astryx 的线条风格一致）；朗读与慢速改用手绘图标 */
 const IC = {
   spk: K.vol,
@@ -710,7 +724,9 @@ let VOICES = [], booted = false;
 const FUN = /bahh|junior|superstar|whisper|zarvox|trinoids|jester|organ|bells|boing|bubbles|cellos/i;
 const rank = v => (FUN.test(v.name) ? 4 : 0) + (/de[-_]DE/i.test(v.lang) ? 0 : 1) + (v.default ? -1 : 0);
 function loadVoices() {
-  VOICES = (speechSynthesis.getVoices() || []).filter(v => /^de/i.test(v.lang))
+  /* 全部系统语音都列出（德语优先），不再过滤成只剩德语——
+     浏览器若只暴露一个德语语音，用户也能看到其它语音可选 */
+  VOICES = (speechSynthesis.getVoices() || []).slice()
     .sort((a, b) => (rank(a) - rank(b)) || a.name.localeCompare(b.name));
   if (booted && curView === 'me') render();   // 语音列表异步到达时刷新设置页
 }
@@ -738,6 +754,7 @@ document.addEventListener('touchstart', primeTTS, { once: true, capture: true, p
 function stopSpeak() {
   try { if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel(); } catch (e) {}
   if (gAudio) { try { gAudio.pause(); } catch (e) {} }
+  if (laAudio) { try { laAudio.pause(); } catch (e) {} }
 }
 /* Google TTS 在线源：系统语音只有一个 / 听不清时切过来。需要联网，但发音更清晰自然。
    audio 无跨域限制，直接播放即可；慢速用 playbackRate 实现。 */
@@ -996,11 +1013,11 @@ function renderLaut() {
 
   <div class="sec-t">字母表 · ${A.alphabet.length} 个</div>
   <div class="alpha">
-    ${A.alphabet.map(a => `<div class="ab" data-name="${esc(a.name)}">
+    ${A.alphabet.map(a => `<div class="ab" data-name="${esc(a.name)}" data-l="${esc(a.l)}">
       <b>${esc(a.l)}</b><i>${esc(a.ipa)}</i><s data-say="${esc(a.ex)}">${esc(a.ex)}</s></div>`).join('')}
   </div>
   <div class="tiny muted" style="margin:8px 2px 0">
-     点字母听字母名，点下面的例词听单词。口语 Teil 1 要求拼写自己的名字，字母名本身就是考点。</div>
+     点字母听字母名（内置本地录音，离线标准音），点下面的例词听单词。口语 Teil 1 要求拼写自己的名字，字母名本身就是考点。</div>
   ${A.alphabet.filter(a => a.tip).map(a => `<div class="ltip">
     <b>${esc(a.l)}</b>${esc(a.tip)}</div>`).join('')}
 
@@ -1031,7 +1048,7 @@ function renderLaut() {
     const t = e.target.closest('[data-say]');
     if (t) { say(t.dataset.say); return; }
     const ab = e.target.closest('.ab');
-    if (ab) say(ab.dataset.name);
+    if (ab && !speakLocal('letter', ab.dataset.l)) say(ab.dataset.name);
   };
 }
 
@@ -1095,11 +1112,11 @@ function renderMe() {
   <div class="card setgrp">
     <div class="set"><div class="lb">正常语速<small>「慢速」固定为 0.4 倍，不受这里影响</small></div>
       <input type="range" id="rate" min="0.5" max="1.3" step="0.05" value="${S.set.rate}"></div>
-    <div class="set"><div class="lb">发音<small>建议选 de-DE；若慢速听不出差别，换一个语音试试</small></div>
+    <div class="set"><div class="lb">发音<small>列出系统全部语音，德语（de）排最前；标「非德语」的音色读德语会带口音</small></div>
       <select id="voice">${VOICES.length ? VOICES.map(v =>
-      `<option value="${esc(v.voiceURI)}"${v.voiceURI === pickVoice()?.voiceURI ? ' selected' : ''}>${esc(v.name)} (${v.lang})</option>`).join('')
-      : '<option>系统未提供德语语音</option>'}</select></div>
-    <div class="set"><div class="lb">语音来源<small>系统语音离线可用；谷歌在线发音更清晰，但需要联网</small></div>
+      `<option value="${esc(v.voiceURI)}"${v.voiceURI === pickVoice()?.voiceURI ? ' selected' : ''}>${esc(v.name)} (${esc(v.lang)})${/^de/i.test(v.lang) ? '' : ' · 非德语'}</option>`).join('')
+      : '<option>系统未提供语音</option>'}</select></div>
+    <div class="set"><div class="lb">语音来源<small>系统=本机全部语音（离线）；谷歌在线=更清晰（需联网）；字母表另有内置本地录音</small></div>
       <select id="tts">
         <option value="sys"${S.set.tts === 'sys' ? ' selected' : ''}>系统语音（离线）</option>
         <option value="g"${S.set.tts === 'g' ? ' selected' : ''}>谷歌在线（更清晰）</option>
