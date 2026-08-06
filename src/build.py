@@ -22,6 +22,7 @@ sys.path.insert(0, HERE)
 from aussprache import ALPHABET, REGELN, MINIMALPAARE   # noqa: E402
 from lexikon import WORDS, THEMEN, EXTRA                # noqa: E402
 from grammatik import LEKTIONEN                         # noqa: E402
+import zahlen                                           # noqa: E402
 from zergliederung import SATZ                          # noqa: E402
 
 
@@ -116,7 +117,7 @@ def grammatik_data():
 
 def grammatik_texts():
     """语法课里所有可朗读的德语：例句，以及表格里以 * 开头的单元格。"""
-    out = []
+    out = list(zahlen.texts())
     for L in LEKTIONEN:
         for b in L['blocks']:
             if b[0] == 'bsp':
@@ -226,7 +227,7 @@ def check(data):
 if __name__ == '__main__':
     woerter = load_woerter()
     data = {'woerter': woerter, 'aussprache': aussprache_data(), 'audio': audio_index(),
-            'grammatik': grammatik_data(),
+            'grammatik': grammatik_data(), 'num': zahlen.data(),
             'satz': SATZ,
             'themen': [{'c': c, 'zh': zh, 'sub': sub, 'amt': True} for c, zh, sub in THEMEN]
                     + [{'c': c, 'zh': zh, 'sub': sub, 'amt': False} for c, zh, sub in EXTRA]}
@@ -248,6 +249,8 @@ if __name__ == '__main__':
     print('built %s' % dst)
     print('  词条 %d（名词 %d，其中复数已展开 %d）'
           % (n, len(nouns), sum(1 for x in nouns if x['pl'])))
+    print('  数字 0-%d · 报时 %d 句（构建期生成，测验直接查表）'
+          % (zahlen.MAX, len(data['num']['uhr'])))
     print('  语法课 %d 篇（%d 块 · %d 条可朗读）'
           % (len(data['grammatik']), sum(len(g['blocks']) for g in data['grammatik']),
              len(set(grammatik_texts()))))

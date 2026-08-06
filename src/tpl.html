@@ -743,13 +743,16 @@ function applyTheme() {
 }
 /* Koboyo 手绘图标（构建时注入 src/icons/*.svg） */
 const K = __ICONS__;
-/* 本地字母名语音（构建时注入 src/alphabet_audio.json），用系统德语语音录的。
-   只在音源选「系统语音」时用它——选了预生成音色却播这个，字母和例词会明显
-   是两个人在读。其余情况让字母名走 say()，跟随所选音源。 */
+/* 本地字母名语音（构建时注入 src/alphabet_audio.json）。一律用它，不跟随音源。
+
+   曾经改成让字母名跟随音源走 TTS，结果读错了：aussprache.py 里的字母名是
+   拼音式写法（ah / beh / ie / kuh），TTS 把它们当普通德语单词念，出来的不是
+   字母名。内置录音是按真实字母录的，正确；而且是内嵌 base64，点了立刻响，
+   没有网络往返。 */
 const LA = __ALPH_AUDIO__;
 let laAudio = null;
 function speakLocal(kind, letter, text) {
-  if (kind === 'letter' && LA[letter] && S.set.tts === 'sys') {
+  if (kind === 'letter' && LA[letter]) {
     stopSpeak();
     try {
       laAudio = new Audio('data:audio/mp4;base64,' + LA[letter]);
@@ -868,19 +871,44 @@ function once(fn) { let used = false; return () => { if (!used) { used = true; f
 const msVoice = () => (S.set.tts || '').startsWith('ms:') ? S.set.tts.slice(3) : null;
 
 let msAudio = null, msWarned = false;
+/* 每条音频都是独立的小文件，慢在往返而不在体积——实测线上首字节 1.5 秒，
+   点一下要等一秒多才出声。所以渲染时就把这一屏会读到的预热掉，点下去才是
+   即时的。缓存 Audio 元素本身，浏览器把已下好的数据留在里面。 */
+const clipCache = new Map();
+const CLIP_CACHE_MAX = 400;
+function clipAudio(voice, text) {
+  const url = `audio/${voice}/${clipId(text)}.mp3`;
+  let a = clipCache.get(url);
+  if (!a) {
+    a = new Audio();
+    a.preload = 'auto';
+    a.src = url;
+    if (clipCache.size >= CLIP_CACHE_MAX) clipCache.delete(clipCache.keys().next().value);
+    clipCache.set(url, a);
+  }
+  return a;
+}
+/* 渲染完调一次，把这一屏会读到的拉下来。没选预生成音源时是空操作。 */
+function prefetch(texts) {
+  const v = msVoice();
+  if (!v || !texts) return;
+  [...new Set(texts.filter(Boolean))].slice(0, 60).forEach(t => clipAudio(v, t));
+}
 function speakMS(text, rate, cb, voice) {
   stopSpeak();
   /* onerror 与 play() 的 rejection 会各触发一次，不掐住就会读两遍 */
   const fallback = once(() => {
-    if (!msWarned) { msWarned = true; toast('这条没有微软音频，用系统语音代读'); }
+    if (!msWarned) { msWarned = true; toast('这条没有预生成音频，用系统语音代读'); }
     speakNow(text, rate, cb);
   });
   try {
-    msAudio = new Audio(`audio/${voice}/${clipId(text)}.mp3`);
-    msAudio.playbackRate = Math.max(.25, rate || 1);
-    msAudio.onended = once(cb);
-    msAudio.onerror = fallback;                 // 某条没预生成、或文件掉了
-    msAudio.play().catch(fallback);
+    const a = clipAudio(voice, text);
+    msAudio = a;
+    a.playbackRate = Math.max(.25, rate || 1);
+    a.onended = once(cb);
+    a.onerror = fallback;                       // 某条没预生成、或文件掉了
+    try { a.currentTime = 0; } catch (e) {}     // 复用缓存里的元素，从头播
+    a.play().catch(fallback);
   } catch (e) { fallback(); }
 }
 /* Google TTS 在线源：系统语音只有一个 / 听不清时切过来。需要联网，但发音更清晰自然。
@@ -1130,6 +1158,8 @@ function openGram(id) {
     ${g.blocks.map(gramBlock).join('')}
     <div class="credit">点任何德语都能听　·　例句朗读用当前选定的音源</div>`;
   $('grBody').scrollTop = 0;
+  prefetch(g.blocks.flatMap(b => b.k === 'bsp' ? b.items.map(x => x.de)
+    : b.k === 'tab' ? b.rows.flat().filter(c => c.startsWith('*')).map(c => c.slice(1)) : []));
   $('gram').classList.add('on');
 }
 $('grClose').onclick = () => { stopSpeak(); $('gram').classList.remove('on'); };
@@ -1201,6 +1231,10 @@ function renderQuiz() {
 /* ---------- 发音关 ---------- */
 function renderLaut() {
   const A = DATA.aussprache;
+  /* 字母走内嵌录音不用预取；例词和最小对立对要 */
+  prefetch([...A.alphabet.map(a => a.ex),
+            ...A.regeln.flatMap(g => g.items.flatMap(r => r.ex)),
+            ...A.paare.flatMap(p => [p.a, p.b])]);
   view.innerHTML = `
   <div class="card panel" style="margin-top:4px">
     <div class="ltag">第 0 关</div>
@@ -1449,6 +1483,10 @@ function drawCard(speak) {
     </div>
     <div class="hint">轻点卡片返回正面　·　左右滑动切换单词</div>`;
 
+  /* 本卡 + 下一张的音频提前拉好，翻到时不用等 */
+  const nx = Q[qi + 1];
+  prefetch([w.w, ...w.ex, ...(w.derived || []).map(d => d.w),
+            ...(nx ? [nx.w, ...nx.ex] : [])]);
   if (speak !== false && S.set.autoSpeak) setTimeout(() => say(w.w), 260);
 }
 
@@ -1533,26 +1571,14 @@ cw.addEventListener('touchend', e => {
 
 /* ===================== 专项练习 ===================== */
 /* 德语数字 0-199 生成器（PRODUCT.md 5.1：数字倒读是听力最大失分点） */
-const NUM0 = ['null','eins','zwei','drei','vier','fünf','sechs','sieben','acht','neun','zehn','elf','zwölf'];
-const NUM10 = ['zehn','elf','zwölf','dreizehn','vierzehn','fünfzehn','sechzehn','siebzehn','achtzehn','neunzehn'];
-const NUM_EINZ = ['','ein','zwei','drei','vier','fünf','sechs','sieben','acht','neun'];
-const NUM_ZEHN = ['','','zwanzig','dreißig','vierzig','fünfzig','sechzig','siebzig','achtzig','neunzig'];
-function numDe(n) {
-  if (n < 12) return NUM0[n];
-  if (n < 20) return NUM10[n - 10];
-  if (n < 100) return (n % 10 ? NUM_EINZ[n % 10] + 'und' : '') + NUM_ZEHN[(n / 10) | 0];
-  return 'hundert' + (n % 100 ? numDe(n % 100) : '');
-}
-/* 时间表达：halb X = 下一个整点的一半；Viertel nach/vor 同逻辑 */
-function zeitDe(h, m) {
-  const hh = h % 12 || 12;
-  if (m === 0) return 'Es ist ' + numDe(h) + ' Uhr.';
-  if (m === 15) return 'Es ist Viertel nach ' + numDe(h) + '.';
-  if (m === 30) return 'Es ist halb ' + numDe(hh) + '.';
-  if (m === 45) return 'Es ist Viertel vor ' + numDe(hh) + '.';
-  if (m < 30) return 'Es ist ' + numDe(h) + ' Uhr ' + numDe(m) + '.';
-  return 'Es ist ' + numDe(hh) + ' Uhr minus ' + numDe(60 - m) + '.';
-}
+/* 数字与报时由 src/zahlen.py 在构建期算好，这里只查表。
+
+   不在前端现拼的原因有两个：拼出来的字符串没有预生成音频，点了要等
+   404 才回落，而那时 iOS 已脱离用户手势，语音合成被系统拦掉，表现就是
+   「没声音」；另外前端那份报时本身是错的——halb 与 Viertel vor 要用
+   下一个整点，原来的代码用的是当前整点，2:30 拼成了 halb zwei。 */
+const numDe = n => DATA.num.zahl[n] || '';
+const zeitDe = (h, m) => DATA.num.uhr[h + ':' + m] || '';
 const zz = n => (n < 10 ? '0' : '') + n;
 /* 性别词尾规律（PRODUCT.md 4.1）：约 80% 可预测，错的时候提示学生看词尾 */
 const ENDREGELN = [
@@ -1649,11 +1675,14 @@ DRILL.zeit = function () {
   $('drTitle').textContent = '时间 · halb 的陷阱';
   const body = $('drBody');
   const next = () => {
-    const h = Math.random() * 24 | 0, m = [0, 15, 30, 45][Math.random() * 4 | 0];
+    /* 只用 12 小时制出题：24 小时制下「halb drei」既可能是 2:30 也可能是
+       14:30，两个都出现在选项里就成了无解题 */
+    const H = DATA.num.stunden, M = DATA.num.minuten;
+    const h = H[Math.random() * H.length | 0], m = M[Math.random() * M.length | 0];
     cur = [h, m];
     const opts = [{ h, m }];
     while (opts.length < 4) {
-      const o = { h: Math.random() * 24 | 0, m: [0, 15, 30, 45][Math.random() * 4 | 0] };
+      const o = { h: H[Math.random() * H.length | 0], m: M[Math.random() * M.length | 0] };
       if (!opts.some(x => x.h === o.h && x.m === o.m)) opts.push(o);
     }
     shuffle(opts);
