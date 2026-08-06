@@ -501,16 +501,33 @@ input[type=range]{width:118px;accent-color:var(--color-accent);font-family:inher
 .dseg button{flex:1;background:var(--color-background-muted);border:0;border-radius:var(--radius-full);padding:9px 0;
   font-size:var(--font-size-sm);font-weight:var(--font-weight-semibold);font-family:inherit;color:var(--color-text-secondary)}
 .dseg button.on{background:var(--color-accent);color:var(--color-on-accent)}
-/* 首页三段切换：吸顶固定，滚动时一直可见、随时可切。
+/* 首页三段切换：吸顶固定，滚动时一直可见。
    main 左右有 padding，用负 margin 撑通栏再补回来 */
 .hseg{
-  position:sticky;top:0;z-index:20;display:flex;gap:var(--spacing-2);
+  position:sticky;top:0;z-index:20;
   margin:0 calc(var(--spacing-5) * -1) var(--spacing-4);
   padding:10px var(--spacing-5) 12px;
   background:color-mix(in srgb, var(--color-background-body) 88%, transparent);
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   border-bottom:var(--border-width) solid var(--color-border);
 }
+/* Astryx Segmented Control：浅底胶囊容器，选中项白底 + 阴影浮起 */
+.hseg-box{
+  display:flex;gap:2px;padding:4px;border-radius:var(--radius-full);
+  background:var(--color-background-muted);border:var(--border-width) solid var(--color-border);
+}
+.hseg-box button{
+  flex:1;border:0;border-radius:var(--radius-full);padding:8px 0;
+  font-size:var(--font-size-sm);font-weight:var(--font-weight-semibold);font-family:inherit;
+  color:var(--color-text-secondary);background:transparent;
+  transition:background var(--duration-fast) var(--ease-standard),
+             color var(--duration-fast) var(--ease-standard),
+             box-shadow var(--duration-fast) var(--ease-standard);
+}
+.hseg-box button.on{background:var(--color-background-card);color:var(--color-text-primary);box-shadow:var(--shadow-low)}
+/* 切换标签时的轻微滑入 */
+@keyframes hslide{from{opacity:.35;transform:translateX(20px)}to{opacity:1;transform:none}}
+.htrans{animation:hslide var(--duration-medium) var(--ease-standard)}
 /* 出题区 */
 .qcard{padding:var(--spacing-5);margin-top:var(--spacing-3);text-align:center}
 .qbig{font-size:var(--font-size-5xl);font-weight:var(--font-weight-semibold);letter-spacing:-.02em;line-height:1.1;word-break:break-word}
@@ -1045,10 +1062,25 @@ $('tabs').onclick = e => {
   [...$('tabs').children].forEach(x => x.classList.toggle('on', x === b));
   view.scrollTop = 0; render();
 };
+/* 首页三段左右滑动切换：水平滑明显时切标签（与垂直滚动区分开） */
+let htX = 0, htY = 0;
+view.addEventListener('touchstart', e => { htX = e.touches[0].clientX; htY = e.touches[0].clientY; }, { passive: true });
+view.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - htX, dy = e.changedTouches[0].clientY - htY;
+  if (curView !== 'home') return;
+  if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.6) return;
+  setHomeTab(homeTab + (dx < 0 ? 1 : -1));
+}, { passive: true });
 
 /* ---------- 首页 ---------- */
-/* 「学习」页太长，用分段切换收拢成三块：总览（进度+今日任务）、语法、主题 */
-let homeTab = 'overview';
+/* 「学习」页收拢成三段：总览（进度+今日任务）、语法、主题。
+   点标签或左右滑动切换。homeTab 0/1/2。 */
+let homeTab = 0;
+function setHomeTab(i) {
+  if (i === homeTab || i < 0 || i > 2) return;
+  homeTab = i;
+  if (curView === 'home') renderHome();
+}
 function renderHome() {
   /* 语法课数据按需加载：JSON 就绪后若还在首页就重绘（仅成功时） */
   if (!DATA.grammatik.length) {
@@ -1061,14 +1093,14 @@ function renderHome() {
   const C = 2 * Math.PI * 35;
   const byArt = a => NOUNS.filter(w => w.art === a).length;
 
-  const seg = `<div class="dseg hseg">
-    <button data-ht="overview" class="${homeTab === 'overview' ? 'on' : ''}">总览</button>
-    <button data-ht="gram" class="${homeTab === 'gram' ? 'on' : ''}">语法</button>
-    <button data-ht="thema" class="${homeTab === 'thema' ? 'on' : ''}">主题</button>
-  </div>`;
+  const seg = `<div class="hseg"><div class="hseg-box">
+    <button data-ht="0" class="${homeTab === 0 ? 'on' : ''}">总览</button>
+    <button data-ht="1" class="${homeTab === 1 ? 'on' : ''}">语法</button>
+    <button data-ht="2" class="${homeTab === 2 ? 'on' : ''}">主题</button>
+  </div></div>`;
 
   let body;
-  if (homeTab === 'overview') body = `
+  if (homeTab === 0) body = `
   <div class="card panel dash">
     <div class="ring">
       <svg width="86" height="86">
@@ -1104,7 +1136,7 @@ function renderHome() {
   </div>
   <div class="credit">词表与主题划分均来自 Goethe-Zertifikat A1 官方 Wortliste</div>`;
 
-  else if (homeTab === 'gram') body = `
+  else if (homeTab === 1) body = `
   <div class="card panel" style="margin-top:4px">
     <div class="ltag" style="background:var(--color-text-purple)">语法</div>
     <h2 class="ltitle">先讲明白再去练</h2>
@@ -1143,9 +1175,9 @@ function renderHome() {
   </div>
   <div class="credit">点任意主题直接开始背这组词</div>`;
 
-  view.innerHTML = seg + body;
+  view.innerHTML = seg + `<div class="htrans">${body}</div>`;
 
-  view.querySelectorAll('[data-ht]').forEach(b => b.onclick = () => { homeTab = b.dataset.ht; renderHome(); });
+  view.querySelectorAll('[data-ht]').forEach(b => b.onclick = () => setHomeTab(+b.dataset.ht));
   view.querySelectorAll('[data-gram]').forEach(b => b.onclick = () => openGram(b.dataset.gram));
   view.querySelectorAll('[data-thema]').forEach(b => b.onclick = () => {
     const t = DATA.themen.find(x => x.c === b.dataset.thema);
