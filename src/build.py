@@ -69,7 +69,7 @@ def load_woerter():
 
 def aussprache_data():
     return {
-        'alphabet': [{'l': a[0], 'ipa': a[1], 'ex': a[2], 'tip': a[3]} for a in ALPHABET],
+        'alphabet': [{'l': a[0], 'ipa': a[1], 'name': a[2], 'ex': a[3], 'tip': a[4]} for a in ALPHABET],
         'regeln': [{'group': g, 'items': [
             {'rule': r[0], 'ipa': r[1], 'ex': r[2], 'zh': r[3], 'en': r[4]} for r in rules
         ]} for g, rules in REGELN],

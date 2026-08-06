@@ -314,13 +314,13 @@ main{flex:1 1 auto;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:
 .ab{
   background:var(--color-background-card);border:var(--border-width) solid var(--color-border-emphasized);
   border-radius:var(--radius-element);padding:9px 4px 7px;text-align:center;
-  font-family:inherit;color:inherit;box-shadow:var(--shadow-low);
+  font-family:inherit;color:inherit;cursor:pointer;box-shadow:var(--shadow-low);
   transition:transform var(--duration-fast) var(--ease-standard),background var(--duration-fast) var(--ease-standard);
 }
 .ab:active{background:var(--color-accent-muted);border-color:var(--color-accent);transform:translateY(-2px)}
 .ab b{display:block;font-size:var(--font-size-2xl);font-weight:var(--font-weight-semibold);letter-spacing:-.02em;line-height:1.05}
 .ab i{display:block;font-style:normal;font-size:var(--font-size-xs);color:var(--color-brand);margin-top:3px}
-.ab s{display:block;text-decoration:none;font-size:10px;color:var(--color-text-disabled);margin-top:2px;
+.ab s{display:block;text-decoration:none;font-size:10px;color:var(--color-text-disabled);margin-top:2px;cursor:pointer;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ltip{
   display:flex;gap:9px;align-items:baseline;margin-top:var(--spacing-2);
@@ -442,6 +442,64 @@ input[type=range]{width:118px;accent-color:var(--color-accent);font-family:inher
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 .empty{text-align:center;color:var(--color-text-disabled);font-size:var(--font-size-base);padding:48px 0}
 .credit{text-align:center;margin:var(--spacing-5) 0 var(--spacing-2);font-size:var(--font-size-xs);color:var(--color-text-disabled)}
+
+/* ---------- 专项练习 ---------- */
+#drill{position:fixed;inset:0;background:var(--color-background-body);z-index:55;display:none;flex-direction:column}
+#drill.on{display:flex}
+.drt{flex:1;font-size:var(--font-size-lg);font-weight:var(--font-weight-semibold);letter-spacing:-.01em;min-width:0}
+#drBody{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:var(--spacing-2) var(--spacing-5) calc(var(--safe-b) + var(--spacing-6))}
+.dseg{display:flex;gap:var(--spacing-2);margin:var(--spacing-3) 0 0}
+.dseg button{flex:1;background:var(--color-background-muted);border:0;border-radius:var(--radius-full);padding:9px 0;
+  font-size:var(--font-size-sm);font-weight:var(--font-weight-semibold);font-family:inherit;color:var(--color-text-secondary)}
+.dseg button.on{background:var(--color-accent);color:var(--color-on-accent)}
+/* 出题区 */
+.qcard{padding:var(--spacing-5);margin-top:var(--spacing-3);text-align:center}
+.qbig{font-size:var(--font-size-5xl);font-weight:var(--font-weight-semibold);letter-spacing:-.02em;line-height:1.1;word-break:break-word}
+.qsub{font-size:var(--font-size-base);color:var(--color-text-secondary);margin-top:8px}
+.qbtn{display:flex;gap:var(--spacing-2);margin-top:var(--spacing-4);flex-wrap:wrap;justify-content:center}
+.qbtn .btn{flex:1;min-width:110px}
+.qinp{width:100%;margin-top:var(--spacing-4);background:var(--color-background-card);border:2px solid var(--color-border-emphasized);
+  border-radius:var(--radius-element);padding:13px var(--spacing-4);font-size:var(--font-size-2xl);text-align:center;
+  font-family:inherit;color:var(--color-text-primary);font-variant-numeric:tabular-nums}
+.qinp:focus{outline:none;border-color:var(--color-accent)}
+/* 判分反馈 */
+.qfb{margin-top:var(--spacing-4);padding:var(--spacing-4);border-radius:var(--radius-container);font-size:var(--font-size-lg);line-height:1.6}
+.qfb.ok{background:var(--color-success-muted);color:var(--color-text-green)}
+.qfb.no{background:var(--color-error-muted);color:var(--color-text-red)}
+.qfb b{font-weight:var(--font-weight-bold)}
+/* 冠词三选 */
+.art3{display:flex;gap:var(--spacing-2);margin-top:var(--spacing-5)}
+.art3 button{flex:1;border:0;border-radius:var(--radius-full);padding:15px 0;font-size:var(--font-size-lg);font-weight:var(--font-weight-semibold);font-family:inherit;transition:transform var(--duration-fast) var(--ease-standard)}
+.art3 button:active{transform:scale(.96)}
+.art3 .b-der{background:var(--color-background-blue);color:var(--color-text-blue)}
+.art3 .b-die{background:var(--color-error-muted);color:var(--color-text-red)}
+.art3 .b-das{background:var(--color-success-muted);color:var(--color-text-green)}
+.art3 button.wrong{outline:3px solid var(--color-error)}
+.rulechip{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;padding:9px 13px;border-radius:var(--radius-element);
+  background:var(--color-warning-muted);font-size:var(--font-size-sm);color:var(--color-text-yellow);line-height:1.5}
+.rulechip b{font-weight:var(--font-weight-bold)}
+.rulechip .art{font-size:11px;padding:1px 7px}
+/* 句子排序 */
+.satz-ern{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:var(--spacing-3);padding:13px var(--spacing-4);
+  background:var(--color-background-blue);border-radius:var(--radius-element);font-size:var(--font-size-sm);color:var(--color-text-blue);line-height:1.6}
+.pool{display:flex;flex-wrap:wrap;gap:var(--spacing-2);margin-top:var(--spacing-4);min-height:44px}
+.pool .block,.sel .block{background:var(--color-background-muted);border:var(--border-width) solid var(--color-border-emphasized);
+  border-radius:var(--radius-full);padding:9px 15px;font-size:var(--font-size-lg);font-weight:var(--font-weight-semibold);font-family:inherit;color:inherit;cursor:pointer}
+.pool .block:active{transform:scale(.96);background:var(--color-accent-muted)}
+.pool .block.dim{opacity:.25;pointer-events:none}
+.sel{display:flex;flex-wrap:wrap;gap:var(--spacing-2);margin-top:var(--spacing-2);min-height:44px;border-bottom:2px dashed var(--color-border-emphasized);padding-bottom:var(--spacing-2)}
+.sel .block{background:var(--color-accent);color:var(--color-on-accent);border-color:transparent}
+.satz-act{display:flex;gap:var(--spacing-2);margin-top:var(--spacing-4)}
+.kbox{display:flex;flex-wrap:wrap;align-items:stretch;margin-top:9px}
+.kbox .pre{display:flex;align-items:center;padding:8px 13px;border-radius:var(--radius-inner) 0 0 var(--radius-inner);
+  border:2px solid var(--color-brand);border-right-width:1px;background:var(--color-background-card);font-weight:var(--font-weight-semibold)}
+.kbox .mid{display:flex;align-items:center;padding:8px 13px;border-top:2px solid var(--color-brand);border-bottom:2px solid var(--color-brand);color:var(--color-text-secondary);font-size:var(--font-size-sm)}
+.kbox .right{display:flex;align-items:center;padding:8px 13px;border:2px solid var(--color-brand);border-left-width:1px;border-radius:0 var(--radius-inner) var(--radius-inner) 0;background:var(--color-background-card);font-weight:var(--font-weight-semibold)}
+.kcap{margin-top:6px;font-size:var(--font-size-xs);color:var(--color-brand);letter-spacing:.04em}
+/* 考试用语列表 */
+.drlist .row .w{font-size:var(--font-size-lg)}
+.drlist .row .z{font-size:var(--font-size-sm);color:var(--color-text-secondary);margin-top:2px}
+.drstat{font-size:var(--font-size-sm);color:var(--color-text-secondary);margin:var(--spacing-3) 2px 0;line-height:1.7}
 </style>
 </head>
 <body>
@@ -491,6 +549,14 @@ input[type=range]{width:118px;accent-color:var(--color-accent);font-family:inher
     <div class="actcap"><span>本轮再出现</span><span>10 分钟后</span><span>拉长间隔</span></div>
   </div>
 </div>
+<div id="drill">
+  <div class="stbar">
+    <button class="iconbtn" id="drClose"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div class="drt" id="drTitle">专项练习</div>
+    <div class="pg" id="drScore"></div>
+  </div>
+  <div id="drBody"></div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -524,7 +590,7 @@ const KEY = 'igcse-flashcard-v1';
 const DEF = {
   prog: {},                       // word -> {box, due, seen, wrong, star}
   les: {},                        // 课时 id -> {goals:[], check:[]} 勾选状态
-  set: { rate: .95, voice: '', autoSpeak: true, sylMode: 'respell', maskZh: false, theme: 'light' }
+  set: { rate: .95, voice: '', autoSpeak: true, sylMode: 'respell', maskZh: false, theme: 'light', tts: 'sys' }
 };
 let S = load();
 function load() {
@@ -568,7 +634,9 @@ const isMastered = w => (S.prog[w.w]?.box || 0) >= 4;
 let VOICES = [], booted = false;
 /* 英音优先、系统默认音优先，玩具音色排最后 */
 /* 德语语音优先 de-DE，系统默认音优先，玩具音色排最后 */
-const FUN = /eddy|flo|grandma|grandpa|reed|rocko|sandy|shelley|bahh|junior|superstar|whisper|zarvox|trinoids|jester|organ|bells|boing|bubbles|cellos/i;
+/* 真正的玩具音色。注意别把 Eddy / Flo / Grandma 这类 macOS「新声音」当玩具——
+   它们在德语里是正常语音，过滤掉会导致德语只剩一个声音可选 */
+const FUN = /bahh|junior|superstar|whisper|zarvox|trinoids|jester|organ|bells|boing|bubbles|cellos/i;
 const rank = v => (FUN.test(v.name) ? 4 : 0) + (/de[-_]DE/i.test(v.lang) ? 0 : 1) + (v.default ? -1 : 0);
 function loadVoices() {
   VOICES = (speechSynthesis.getVoices() || []).filter(v => /^de/i.test(v.lang))
@@ -598,6 +666,24 @@ document.addEventListener('touchstart', primeTTS, { once: true, capture: true, p
 
 function stopSpeak() {
   try { if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel(); } catch (e) {}
+  if (gAudio) { try { gAudio.pause(); } catch (e) {} }
+}
+/* Google TTS 在线源：系统语音只有一个 / 听不清时切过来。需要联网，但发音更清晰自然。
+   audio 无跨域限制，直接播放即可；慢速用 playbackRate 实现。 */
+let gAudio = null, gWarned = false;
+function speakGoogle(text, rate, cb) {
+  stopSpeak();
+  try {
+    gAudio = new Audio();
+    gAudio.src = 'https://translate.googleapis.com/translate_tts?ie=UTF-8&client=tw-ob&tl=de&q='
+      + encodeURIComponent(text) + '&_=' + Date.now();
+    gAudio.playbackRate = Math.max(.25, rate || 1);
+    let done = false;
+    const finish = () => { if (!done) { done = true; cb && cb(); } };
+    gAudio.onended = finish;
+    gAudio.onerror = () => { finish(); if (!gWarned) { gWarned = true; toast('谷歌语音加载失败，请检查网络'); } };
+    gAudio.play().catch(() => { finish(); if (!gWarned) { gWarned = true; toast('谷歌语音加载失败，请检查网络'); } });
+  } catch (e) { cb && cb(); }
 }
 /* 真正发声。Chrome/Safari 偶尔会卡在 speaking=true 却不出声，这里做超时自检并重试一次 */
 function speakNow(text, rate, onend, attempt) {
@@ -625,7 +711,10 @@ function speakNow(text, rate, onend, attempt) {
     onend && onend();                                                        // 放弃，把控制权交回
   }, 450);
 }
-function say(text, rate, cb) { stopSpeak(); speakNow(text, rate, cb); }
+function say(text, rate, cb) {
+  if (S.set.tts === 'g') { speakGoogle(text, rate, cb); return; }
+  stopSpeak(); speakNow(text, rate, cb);
+}
 
 /* 依次朗读一串内容，可带高亮回调 */
 function sayList(items, i) {
@@ -726,6 +815,38 @@ function renderHome() {
     <button class="btn line" id="goAll" style="flex:1">全部乱序</button>
   </div>
 
+  <div class="sec-t">专项练习 · 考试必练</div>
+  <button class="card chap" data-drill="num">
+    <div class="no" style="background:var(--color-brand)">1</div>
+    <div class="bd"><div class="t">数字 · 0-100</div>
+      <div class="e">听德语报数填数字 —— 专治 einundzwanzig 倒读</div></div>
+    <div class="n">TTS 出题</div>
+  </button>
+  <button class="card chap" data-drill="zeit">
+    <div class="no" style="background:var(--color-brand)">2</div>
+    <div class="bd"><div class="t">时间 · halb 的陷阱</div>
+      <div class="e">halb drei 是 2:30 不是 3:30，Viertel nach / vor 同理</div></div>
+    <div class="n">TTS 报时</div>
+  </button>
+  <button class="card chap" data-drill="art">
+    <div class="no" style="background:var(--color-brand)">3</div>
+    <div class="bd"><div class="t">性别 · der / die / das</div>
+      <div class="e">看名词选冠词，错了会告诉你词尾规律</div></div>
+    <div class="n">${NOUNS.length} 个名词</div>
+  </button>
+  <button class="card chap" data-drill="satz">
+    <div class="no" style="background:var(--color-brand)">4</div>
+    <div class="bd"><div class="t">句子 · Satzklammer 语序</div>
+      <div class="e">动词框结构：情态 / 可分 / Perfekt，把词块排成句</div></div>
+    <div class="n">排序练习</div>
+  </button>
+  <button class="card chap" data-drill="pruef">
+    <div class="no" style="background:var(--color-brand)">5</div>
+    <div class="bd"><div class="t">考试用语 · 指令语 + 救场句</div>
+      <div class="e">看得懂试卷指令，考场上答不上来有话说</div></div>
+    <div class="n">单词表</div>
+  </button>
+
   <div class="sec-t">按主题 · 考纲的十个范围</div>
   ${DATA.themen.filter(t => t.amt).map(t => themaRow(t)).join('')}
 
@@ -772,6 +893,7 @@ function renderHome() {
     const list = a === 'rest' ? ALL.filter(w => w.pos !== 'noun') : NOUNS.filter(w => w.art === a);
     startStudy(list.slice(), a === 'rest' ? '动词与其他' : a + ' 名词');
   });
+  view.querySelectorAll('[data-drill]').forEach(b => b.onclick = () => openDrill(b.dataset.drill));
 }
 const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0;[a[i], a[j]] = [a[j], a[i]]; } return a; };
 
@@ -803,11 +925,11 @@ function renderLaut() {
 
   <div class="sec-t">字母表 · ${A.alphabet.length} 个</div>
   <div class="alpha">
-    ${A.alphabet.map(a => `<button class="ab" data-say="${esc(a.ex)}">
-      <b>${esc(a.l)}</b><i>${esc(a.ipa)}</i><s>${esc(a.ex)}</s></button>`).join('')}
+    ${A.alphabet.map(a => `<div class="ab" data-name="${esc(a.name)}">
+      <b>${esc(a.l)}</b><i>${esc(a.ipa)}</i><s data-say="${esc(a.ex)}">${esc(a.ex)}</s></div>`).join('')}
   </div>
   <div class="tiny muted" style="margin:8px 2px 0">
-    口语 Teil 1 要求拼写自己的名字，字母名本身就是考点。点字母听例词。</div>
+     点字母听字母名，点下面的例词听单词。口语 Teil 1 要求拼写自己的名字，字母名本身就是考点。</div>
   ${A.alphabet.filter(a => a.tip).map(a => `<div class="ltip">
     <b>${esc(a.l)}</b>${esc(a.tip)}</div>`).join('')}
 
@@ -836,7 +958,9 @@ function renderLaut() {
 
   view.onclick = e => {
     const t = e.target.closest('[data-say]');
-    if (t) say(t.dataset.say);
+    if (t) { say(t.dataset.say); return; }
+    const ab = e.target.closest('.ab');
+    if (ab) say(ab.dataset.name);
   };
 }
 
@@ -904,6 +1028,11 @@ function renderMe() {
       <select id="voice">${VOICES.length ? VOICES.map(v =>
       `<option value="${esc(v.voiceURI)}"${v.voiceURI === pickVoice()?.voiceURI ? ' selected' : ''}>${esc(v.name)} (${v.lang})</option>`).join('')
       : '<option>系统未提供德语语音</option>'}</select></div>
+    <div class="set"><div class="lb">语音来源<small>系统语音离线可用；谷歌在线发音更清晰，但需要联网</small></div>
+      <select id="tts">
+        <option value="sys"${S.set.tts === 'sys' ? ' selected' : ''}>系统语音（离线）</option>
+        <option value="g"${S.set.tts === 'g' ? ' selected' : ''}>谷歌在线（更清晰）</option>
+      </select></div>
     <div class="set"><div class="lb">翻卡自动朗读<small>显示新卡片时自动读一遍</small></div>
       <button class="sw${S.set.autoSpeak ? ' on' : ''}" id="auto"><i></i></button></div>
   </div>
@@ -924,6 +1053,7 @@ function renderMe() {
   $('theme').onchange = e => { S.set.theme = e.target.value; save(); applyTheme(); };
   $('rate').oninput = e => { S.set.rate = +e.target.value; save(); };
   $('voice').onchange = e => { S.set.voice = e.target.value; save(); };
+  $('tts').onchange = e => { S.set.tts = e.target.value; save(); };
   $('auto').onclick = e => { S.set.autoSpeak = !S.set.autoSpeak; e.currentTarget.classList.toggle('on', S.set.autoSpeak); save(); };
   $('test').onclick = () => say('Entschuldigung');
   $('reset').onclick = () => { if (confirm('确定清空所有学习进度？')) { S.prog = {}; save(); render(); toast('已清空'); } };
@@ -1004,6 +1134,12 @@ $('card3d').addEventListener('click', e => {
     else if (a === 'seq') playSeq(w);
     return;
   }
+  const sb = e.target.closest('[data-say]');
+  if (sb) {
+    e.stopPropagation();
+    say(sb.dataset.say, sb.dataset.slow ? SLOW : undefined);
+    return;
+  }
   const cut = e.target.closest('.cut');
   if (cut) {
     e.stopPropagation();
@@ -1062,6 +1198,343 @@ cw.addEventListener('touchend', e => {
   if (dx < 0 && qi < Q.length - 1) { qi++; drawCard(); }
   else if (dx > 0 && qi > 0) { qi--; drawCard(); }
 }, { passive: true });
+
+/* ===================== 专项练习 ===================== */
+/* 德语数字 0-199 生成器（PRODUCT.md 5.1：数字倒读是听力最大失分点） */
+const NUM0 = ['null','eins','zwei','drei','vier','fünf','sechs','sieben','acht','neun','zehn','elf','zwölf'];
+const NUM10 = ['zehn','elf','zwölf','dreizehn','vierzehn','fünfzehn','sechzehn','siebzehn','achtzehn','neunzehn'];
+const NUM_EINZ = ['','ein','zwei','drei','vier','fünf','sechs','sieben','acht','neun'];
+const NUM_ZEHN = ['','','zwanzig','dreißig','vierzig','fünfzig','sechzig','siebzig','achtzig','neunzig'];
+function numDe(n) {
+  if (n < 12) return NUM0[n];
+  if (n < 20) return NUM10[n - 10];
+  if (n < 100) return (n % 10 ? NUM_EINZ[n % 10] + 'und' : '') + NUM_ZEHN[(n / 10) | 0];
+  return 'hundert' + (n % 100 ? numDe(n % 100) : '');
+}
+/* 时间表达：halb X = 下一个整点的一半；Viertel nach/vor 同逻辑 */
+function zeitDe(h, m) {
+  const hh = h % 12 || 12;
+  if (m === 0) return 'Es ist ' + numDe(h) + ' Uhr.';
+  if (m === 15) return 'Es ist Viertel nach ' + numDe(h) + '.';
+  if (m === 30) return 'Es ist halb ' + numDe(hh) + '.';
+  if (m === 45) return 'Es ist Viertel vor ' + numDe(hh) + '.';
+  if (m < 30) return 'Es ist ' + numDe(h) + ' Uhr ' + numDe(m) + '.';
+  return 'Es ist ' + numDe(hh) + ' Uhr minus ' + numDe(60 - m) + '.';
+}
+const zz = n => (n < 10 ? '0' : '') + n;
+/* 性别词尾规律（PRODUCT.md 4.1）：约 80% 可预测，错的时候提示学生看词尾 */
+const ENDREGELN = [
+  ['ung','die'],['heit','die'],['keit','die'],['schaft','die'],['ion','die'],['tät','die'],['ik','die'],['ur','die'],
+  ['er','der'],['ling','der'],['ismus','der'],['ig','der'],
+  ['chen','das'],['lein','das'],['ment','das'],['tum','das'],
+];
+function endregel(w) {
+  for (const [s, a] of ENDREGELN) if (w.toLowerCase().endsWith(s)) return [s, a];
+  return null;
+}
+
+const DRILL = {};
+let drTimer = null;
+function drLater(fn, ms) { clearTimeout(drTimer); drTimer = setTimeout(fn, ms); }
+$('drClose').onclick = () => { clearTimeout(drTimer); stopSpeak(); $('drill').classList.remove('on'); };
+function openDrill(kind) {
+  clearTimeout(drTimer);
+  stopSpeak();
+  $('drill').classList.add('on');
+  $('drScore').textContent = '';
+  (DRILL[kind] || DRILL.num)();
+}
+
+/* ---------- 1. 数字专项 ---------- */
+DRILL.num = function () {
+  let mode = 'h', right = 0, total = 0, cur = 0;
+  $('drTitle').textContent = '数字 · 0-100';
+  const body = $('drBody');
+  const draw = () => {
+    body.innerHTML = `
+    <div class="dseg">
+      <button data-m="h" class="${mode === 'h' ? 'on' : ''}">听德语写数字</button>
+      <button data-m="w" class="${mode === 'w' ? 'on' : ''}">看数字写德语</button>
+    </div>
+    <div class="card qcard">
+      <div id="qArea"></div>
+    </div>
+    <div class="qfb" id="qfb" style="display:none"></div>
+    <div class="drstat" id="qstat"></div>`;
+    body.querySelectorAll('.dseg button').forEach(b => b.onclick = () => { mode = b.dataset.m; draw(); next(); });
+    next();
+  };
+  function next() {
+    const q = $('qArea'), fb = $('qfb'), st = $('qstat');
+    fb.style.display = 'none';
+    st.textContent = `对 ${right} / ${total}　答错自动标记为易错数`;
+    cur = 4 + (Math.random() * 197 | 0);
+    if (mode === 'h') {
+      q.innerHTML = `<div class="qsub">听德语报数，写下阿拉伯数字</div>
+        <button class="btn pri blk" id="again" style="margin-top:16px">${IC.spk} 再听一遍</button>
+        <input class="qinp" id="numIn" inputmode="numeric" placeholder="输入数字…">
+        <div class="qbtn"><button class="btn pri" id="chk">判分</button><button class="btn line" id="skip">跳过</button></div>`;
+      say(numDe(cur));
+      $('again').onclick = () => say(numDe(cur));
+      $('numIn').focus();
+      $('chk').onclick = () => judge(+($('numIn').value.trim()));
+      $('numIn').addEventListener('keydown', e => { if (e.key === 'Enter') $('chk').click(); });
+      $('skip').onclick = () => { total++; showAns(null); };
+    } else {
+      q.innerHTML = `<div class="qbig">${cur}</div>
+        <div class="qsub">写出德语（如 21 → einundzwanzig）</div>
+        <input class="qinp" id="numIn" placeholder="德语拼写…">
+        <div class="qbtn"><button class="btn pri" id="chk">判分</button><button class="btn line" id="skip">看答案</button></div>`;
+      $('chk').onclick = () => judgeTyped($('numIn').value);
+      $('numIn').addEventListener('keydown', e => { if (e.key === 'Enter') $('chk').click(); });
+      $('skip').onclick = () => { total++; showAns(null); };
+    }
+  }
+  function showAns(good) {
+    const fb = $('qfb');
+    fb.style.display = 'block';
+    if (good === true) { fb.className = 'qfb ok'; fb.innerHTML = `✔ <b>${numDe(cur)}</b> = ${cur}`; right++; }
+    else if (good === false) { fb.className = 'qfb no'; fb.innerHTML = `✘ 正确答案是 <b>${numDe(cur)}</b> = ${cur}，记住倒读：个位 + und + 十位`; }
+    else { fb.className = 'qfb no'; fb.innerHTML = `<b>${numDe(cur)}</b> = ${cur}`; }
+    drLater(next, 1500);
+  }
+  function judge(v) {
+    if (v === cur) { total++; showAns(true); }
+    else { total++; showAns(false); }
+  }
+  function judgeTyped(v) {
+    const s = v.trim().toLowerCase().replace(/[\s-]+/g, '');
+    total++;
+    if (s === numDe(cur).replace(/[\s-]+/g, '')) showAns(true);
+    else showAns(false);
+  }
+  draw();
+};
+
+/* ---------- 2. 时间专项 ---------- */
+DRILL.zeit = function () {
+  let right = 0, total = 0, cur = null;
+  $('drTitle').textContent = '时间 · halb 的陷阱';
+  const body = $('drBody');
+  const next = () => {
+    const h = Math.random() * 24 | 0, m = [0, 15, 30, 45][Math.random() * 4 | 0];
+    cur = [h, m];
+    const opts = [{ h, m }];
+    while (opts.length < 4) {
+      const o = { h: Math.random() * 24 | 0, m: [0, 15, 30, 45][Math.random() * 4 | 0] };
+      if (!opts.some(x => x.h === o.h && x.m === o.m)) opts.push(o);
+    }
+    shuffle(opts);
+    body.innerHTML = `
+      <div class="drstat">听到时间后，选出对应的钟面。注意 halb 指向下一个整点。</div>
+      <div class="card qcard">
+        <div class="qbig" id="zq">—</div>
+        <div class="qsub">${IC.spk} 点这里听德语报时（可反复听）</div>
+        <div class="qbtn">
+          ${opts.map((o, i) => `<button class="btn line" data-z="${i}">${zz(o.h)}:${zz(o.m)}</button>`).join('')}
+        </div>
+      </div>
+      <div class="qfb" id="qfb" style="display:none"></div>
+      <div class="drstat" id="qstat"></div>`;
+    say(zeitDe(h, m));
+    $('zq').onclick = () => say(zeitDe(h, m));
+    body.querySelectorAll('[data-z]').forEach(b => b.onclick = () => {
+      const o = opts[+b.dataset.z], fb = $('qfb');
+      total++;
+      const ok = o.h === cur[0] && o.m === cur[1];
+      if (ok) right++;
+      fb.style.display = 'block';
+      fb.className = 'qfb ' + (ok ? 'ok' : 'no');
+      fb.innerHTML = ok ? `✔ <b>${zeitDe(h, m)}</b> = ${zz(h)}:${zz(m)}`
+        : `✘ 听到的是 <b>${zeitDe(h, m)}</b> = ${zz(h)}:${zz(m)}`;
+      $('qstat').textContent = `对 ${right} / ${total}`;
+      drLater(next, 1800);
+    });
+  };
+  body.innerHTML = `<div class="dseg"><button class="on">听报时选时间</button></div>`;
+  next();
+};
+
+/* ---------- 3. 性别冠词专项 ---------- */
+DRILL.art = function () {
+  let right = 0, total = 0, pool = shuffle(NOUNS.slice());
+  $('drTitle').textContent = '性别 · der / die / das';
+  const body = $('drBody');
+  const next = () => {
+    if (!pool.length) pool = shuffle(NOUNS.slice());
+    const w = pool.pop();
+    total++;
+    body.innerHTML = `
+      <div class="drstat">看名词选冠词。选错会告诉你词尾规律——德语名词约八成能由词尾猜出性别。</div>
+      <div class="card qcard">
+        <div class="qbig" id="artW" style="cursor:pointer">${esc(w.w)}</div>
+        <div class="qsub">${esc(w.zh)}　·　点词听发音</div>
+        <div class="art3">
+          <button class="b-der" data-a="der">der</button>
+          <button class="b-die" data-a="die">die</button>
+          <button class="b-das" data-a="das">das</button>
+        </div>
+      </div>
+      <div class="qfb" id="qfb" style="display:none"></div>
+      <div class="drstat" id="qstat"></div>`;
+    $('artW').onclick = () => say(w.w);
+    body.querySelectorAll('.art3 button').forEach(b => b.onclick = () => {
+      const fb2 = $('qfb');
+      const ok = b.dataset.a === w.art;
+      if (ok) { right++; fb2.className = 'qfb ok'; fb2.innerHTML = `✔ <span class="art ${ART_CLS[w.art]}">${w.art}</span> ${esc(w.w)}　${esc(w.pl && w.pl !== w.w ? 'Pl. ' + w.pl : '')}`; }
+      else {
+        b.classList.add('wrong');
+        fb2.className = 'qfb no';
+        const reg = endregel(w.w);
+        fb2.innerHTML = `✘ 正确是 <span class="art ${ART_CLS[w.art]}">${w.art}</span> ${esc(w.w)}`
+          + (reg ? `<div class="rulechip">词尾 <b>-${esc(reg[0])}</b> 通常是 <span class="art ${ART_CLS[reg[1]]}">${reg[1]}</span></div>` : '');
+      }
+      $('qstat').textContent = `对 ${right} / ${total}`;
+      drLater(next, 1800);
+    });
+  };
+  body.innerHTML = `<div class="dseg"><button class="on">看名词选冠词</button></div>`;
+  next();
+};
+
+/* ---------- 4. 句子结构专项 ---------- */
+/* 打乱词块，按正确语序点击排列。覆盖情态动词 / 可分动词 / Perfekt 三种句框 */
+const SATZU = [
+  ['modal', 'Ich muss morgen früh aufstehen.', ['Ich','muss','morgen früh','aufstehen.']],
+  ['modal', 'Können Sie mir bitte helfen?', ['Können','Sie','mir','bitte','helfen?']],
+  ['modal', 'Ich möchte gern einen Kaffee trinken.', ['Ich','möchte','gern','einen Kaffee','trinken.']],
+  ['modal', 'Er will am Samstag ins Kino gehen.', ['Er','will','am Samstag','ins Kino','gehen.']],
+  ['modal', 'Wir müssen noch einkaufen.', ['Wir','müssen','noch','einkaufen.']],
+  ['trennbar', 'Ich stehe um sieben Uhr auf.', ['Ich','stehe','um sieben Uhr','auf.']],
+  ['trennbar', 'Der Unterricht fängt gleich an.', ['Der Unterricht','fängt','gleich','an.']],
+  ['trennbar', 'Sie kommt morgen mit.', ['Sie','kommt','morgen','mit.']],
+  ['trennbar', 'Ich muss meine Schlüssel abgeben.', ['Ich','muss','meine Schlüssel','abgeben.']],
+  ['perfekt', 'Ich habe schon gegessen.', ['Ich','habe','schon','gegessen.']],
+  ['perfekt', 'Wir haben am Wochenende einen Ausflug gemacht.', ['Wir','haben','am Wochenende','einen Ausflug','gemacht.']],
+  ['perfekt', 'Er ist gestern nach Berlin gefahren.', ['Er','ist','gestern','nach Berlin','gefahren.']],
+  ['satz', 'Sie wohnt in einer kleinen Wohnung.', ['Sie','wohnt','in einer kleinen Wohnung.']],
+  ['satz', 'Ich spreche ein bisschen Deutsch.', ['Ich','spreche','ein bisschen','Deutsch.']],
+  ['satz', 'Wie heißt das auf Deutsch?', ['Wie','heißt','das','auf Deutsch?']],
+];
+const KLA_LB = { modal: '情态动词', trennbar: '可分动词', perfekt: 'Perfekt' };
+DRILL.satz = function () {
+  let i = 0, right = 0, total = 0, done = false;
+  $('drTitle').textContent = '句子 · Satzklammer 语序';
+  const body = $('drBody');
+  const explain = SATZU[i] && SATZU[i][0] !== 'satz';
+  const draw = () => {
+    const [type, sentence, blocks] = SATZU[i];
+    total++;
+    done = false;
+    const ans = blocks.join(' ');
+    const q = shuffle(blocks.slice());
+    body.innerHTML = `
+      <div class="card panel" style="margin-top:4px">
+        <div class="ltag">Satzklammer 句框</div>
+        <p class="tiny muted" style="line-height:1.8;margin-top:8px">
+          德语的动词是一个「框」：变位动词占第二位，句子剩下的成分夹在中间，
+          动词第二部分（Infinitiv / 前缀 / Partizip）被挤到句末。这是语序的总钥匙。</p>
+        <div class="kbox" id="kDemo"></div>
+      </div>
+      ${type !== 'satz' ? `<div class="card qcard" style="text-align:left">
+        <div class="qsub" style="text-align:center">这是一句<B style="color:var(--color-text-blue)">${KLA_LB[type]}</B>句</div>
+        <div class="qbig" style="font-size:var(--font-size-xl);margin-top:12px">${esc(sentence)}</div>
+        <div class="satz-ern">句子成分位置：<b>①</b> 主语　<b>②</b> 变位动词（框左）　<b>③</b> 中间成分　<b>④</b> 动词第二部分（框右）</div>
+      </div>` : `<div class="card qcard" style="text-align:left">
+        <div class="qsub" style="text-align:center">把下面的词块按正确语序排成句子</div>
+        <div class="qbig" style="font-size:var(--font-size-xl);margin-top:12px">${esc(sentence)}</div>
+      </div>`}
+      <div class="sec-t" style="margin-top:14px">${type !== 'satz' ? '排出这个句框' : '排出语序'}</div>
+      <div class="sel" id="sel"></div>
+      <div class="pool" id="pool"></div>
+      <div class="satz-act">
+        <button class="btn line" id="undo">退一步</button>
+        <button class="btn pri" id="chkS">检查</button>
+        <button class="btn line" id="skipS">看答案</button>
+      </div>
+      <div class="qfb" id="qfb" style="display:none"></div>
+      <div class="drstat" id="qstat"></div>`;
+    const pool = $('pool'), sel = $('sel');
+    const selArr = [];
+    pool.innerHTML = q.map((b, k) => `<button class="block" data-k="${k}">${esc(b)}</button>`).join('');
+    const paint = () => {
+      [...pool.children].forEach(x => x.classList.toggle('dim', selArr.includes(+x.dataset.k)));
+      sel.innerHTML = selArr.map(k => `<button class="block" data-k="${k}">${esc(q[k])}</button>`).join('');
+    };
+    pool.onclick = e => {
+      const b = e.target.closest('.block'); if (!b || done) return;
+      const k = +b.dataset.k;
+      if (selArr.includes(k)) return;
+      selArr.push(k); paint();
+      if (selArr.length === q.length) drLater(() => $('chkS').click(), 150);
+    };
+    sel.onclick = e => {
+      const b = e.target.closest('.block'); if (!b) return;
+      selArr.splice(selArr.indexOf(+b.dataset.k), 1); paint();
+    };
+    const judge = ok => {
+      const fb = $('qfb'); done = true;
+      if (ok) right++;
+      fb.style.display = 'block';
+      fb.className = 'qfb ' + (ok ? 'ok' : 'no');
+      if (ok) fb.innerHTML = `✔ 语序正确`;
+      else fb.innerHTML = `✘ 正确语序：<b>${esc(ans)}</b>${type !== 'satz' ? '　（框：' + esc(KLA_LB[type]) + '）' : ''}`;
+      $('qstat').textContent = `对 ${right} / ${total}`;
+      drLater(() => { i++; if (i >= SATZU.length) { i = 0; right = total = 0; } draw(); }, 2000);    };
+    $('chkS').onclick = () => judge(selArr.map(k => q[k]).join(' ') === ans);
+    $('skipS').onclick = () => { judge(false); };
+    $('undo').onclick = () => { if (selArr.length) { selArr.pop(); paint(); } };
+    /* 讲解区的句框示意（静态图） */
+    const kd = $('kDemo');
+    if (type === 'modal') kd.innerHTML = `<span class="pre">Ich</span><span class="mid">muss</span><span class="mid">morgen früh</span><span class="right">aufstehen</span><span class="kcap" style="flex-basis:100%">Ich muss morgen früh aufstehen. —— 变位动词 muss + 句末 Infinitiv</span>`;
+    else if (type === 'trennbar') kd.innerHTML = `<span class="pre">Ich</span><span class="mid">stehe</span><span class="mid">um sieben Uhr</span><span class="right">auf</span><span class="kcap" style="flex-basis:100%">Ich stehe um sieben Uhr auf. —— 前缀 auf 被挤到句末</span>`;
+    else if (type === 'perfekt') kd.innerHTML = `<span class="pre">Ich</span><span class="mid">habe</span><span class="mid">schon</span><span class="right">gegessen</span><span class="kcap" style="flex-basis:100%">Ich habe schon gegessen. —— haben + 句末 Partizip</span>`;
+    else kd.innerHTML = `<span class="mid" style="border-bottom:none;border-top:none">V2：陈述句里变位动词永远第二位。先锁定动词，前后自然排开。</span>`;
+    const st = $('qstat'); st.textContent = `第 ${i + 1} 题`;
+    const fb = $('qfb'); fb.style.display = 'none';
+  };
+  body.innerHTML = `<div class="dseg"><button class="on">排语序 · 共 ${SATZU.length} 题</button></div>`;
+  draw();
+};
+
+/* ---------- 5. 考试用语 ---------- */
+const PRUEF_WORTER = [
+  ['Kreuzen Sie an', '请打勾（选择题）', 'funktion'],
+  ['Ergänzen Sie', '请补充 / 填空', 'funktion'],
+  ['Schreiben Sie', '请写', 'funktion'],
+  ['Hören Sie zweimal', '听两遍', 'funktion'],
+  ['Lesen Sie den Text', '阅读这篇课文', 'funktion'],
+  ['Richtig oder falsch?', '对还是错？', 'funktion'],
+  ['Was ist richtig?', '哪一项是对的？', 'funktion'],
+  ['Ordnen Sie zu', '请配对', 'funktion'],
+  ['Wie bitte?', '什么？（没听清）', 'rettung'],
+  ['Können Sie das bitte wiederholen?', '请您再说一遍好吗？', 'rettung'],
+  ['Entschuldigung, ich habe nicht verstanden.', '抱歉，我没听懂。', 'rettung'],
+  ['Wie sagt man … auf Deutsch?', '……用德语怎么说？', 'rettung'],
+  ['Können Sie bitte langsamer sprechen?', '请您说慢一点好吗？', 'rettung'],
+  ['Buchstabieren Sie, bitte.', '请拼写一下。', 'rettung'],
+];
+DRILL.pruef = function () {
+  $('drTitle').textContent = '考试用语';
+  const body = $('drBody');
+  const row = (de, zh, grp) => `<div class="row">
+    <div class="bd"><span class="w">${esc(de)}</span><div class="z">${esc(zh)}</div></div>
+    <span class="iconbtn" data-say="${esc(de)}">${IC.spk}</span></div>`;
+  body.innerHTML = `
+    <div class="sec-t" style="margin-top:8px">题目指令语 · 看不懂指令会做的题也丢分</div>
+    <div class="card rowgrp drlist">
+      ${PRUEF_WORTER.filter(x => x[2] === 'funktion').map(x => row(x[0], x[1])).join('')}
+    </div>
+    <div class="sec-t">口语救场句 · 临场卡壳就用这些</div>
+    <div class="card rowgrp drlist">
+      ${PRUEF_WORTER.filter(x => x[2] === 'rettung').map(x => row(x[0], x[1])).join('')}
+    </div>
+    <div class="credit">点喇叭听发音，跟读几遍</div>`;
+  body.onclick = e => {
+    const t = e.target.closest('[data-say]');
+    if (t) { e.stopPropagation(); say(t.dataset.say); }
+  };
+};
 
 /* ===================== 杂项 ===================== */
 let tt;
