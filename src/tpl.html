@@ -730,17 +730,22 @@ const isNew = w => !S.prog[w.w] || !S.prog[w.w].seen;
 const isMastered = w => (S.prog[w.w]?.box || 0) >= 4;
 
 /* ===================== 朗读 ===================== */
-let VOICES = [], booted = false;
-/* 英音优先、系统默认音优先，玩具音色排最后 */
-/* 德语语音优先 de-DE，系统默认音优先，玩具音色排最后 */
+let VOICES = [], ALL_VOICES = [], booted = false;
+/* 只用德语语音。用英语音色读德语会把每条发音规则都读错——
+   w 读成英语的 /w/、z 读成 /z/、词尾 -ig 读成 /ɪɡ/，正好是第 0 关要拆的那些坑。
+   宁可只有一个德语音色，也不给非德语音色留入口。 */
+const DE = /^de([-_]|$)/i;
 /* 真正的玩具音色。注意别把 Eddy / Flo / Grandma 这类 macOS「新声音」当玩具——
    它们在德语里是正常语音，过滤掉会导致德语只剩一个声音可选 */
 const FUN = /bahh|junior|superstar|whisper|zarvox|trinoids|jester|organ|bells|boing|bubbles|cellos/i;
-const rank = v => (FUN.test(v.name) ? 4 : 0) + (/de[-_]DE/i.test(v.lang) ? 0 : 1) + (v.default ? -1 : 0);
+/* 排序：标准音优先 → 本机离线的优先 → 玩具音色垫底 */
+const rank = v => (FUN.test(v.name) ? 8 : 0)
+                + (/^de[-_]DE/i.test(v.lang) ? 0 : 2)
+                + (v.localService ? 0 : 1)
+                + (v.default ? -1 : 0);
 function loadVoices() {
-  /* 全部系统语音都列出（德语优先），不再过滤成只剩德语——
-     浏览器若只暴露一个德语语音，用户也能看到其它语音可选 */
-  VOICES = (speechSynthesis.getVoices() || []).slice()
+  ALL_VOICES = (speechSynthesis.getVoices() || []).slice();
+  VOICES = ALL_VOICES.filter(v => DE.test(v.lang))
     .sort((a, b) => (rank(a) - rank(b)) || a.name.localeCompare(b.name));
   if (booted && $('setWrap').classList.contains('on')) renderMe();   // 语音列表异步到达时刷新设置页
 }
@@ -749,8 +754,10 @@ loadVoices();
 
 function pickVoice() {
   if (!VOICES.length) return null;
+  /* 存的可能是改版前选的非德语音色，或换了设备后已不存在的音色，
+     两种情况都退回德语首选，不能照着旧值继续用 */
   if (S.set.voice) { const v = VOICES.find(v => v.voiceURI === S.set.voice); if (v) return v; }
-  return VOICES.find(v => /de[-_]DE/i.test(v.lang)) || VOICES[0];
+  return VOICES[0];
 }
 /* 慢速用绝对值而不是「正常速 − 偏移」：部分系统语音对 rate 不敏感，差距必须拉够大 */
 const SLOW = .4;
@@ -1139,11 +1146,13 @@ function renderMe() {
   <div class="card setgrp">
     <div class="set"><div class="lb">正常语速<small>「慢速」固定为 0.4 倍，不受这里影响</small></div>
       <input type="range" id="rate" min="0.5" max="1.3" step="0.05" value="${S.set.rate}"></div>
-    <div class="set"><div class="lb">发音<small>列出系统全部语音，德语（de）排最前；标「非德语」的音色读德语会带口音</small></div>
-      <select id="voice">${VOICES.length ? VOICES.map(v =>
-      `<option value="${esc(v.voiceURI)}"${v.voiceURI === pickVoice()?.voiceURI ? ' selected' : ''}>${esc(v.name)} (${esc(v.lang)})${/^de/i.test(v.lang) ? '' : ' · 非德语'}</option>`).join('')
-      : '<option>系统未提供语音</option>'}</select></div>
-    <div class="set"><div class="lb">语音来源<small>系统=本机全部语音（离线）；谷歌在线=更清晰（需联网）；字母表另有内置本地录音</small></div>
+    <div class="set"><div class="lb">发音<small>${VOICES.length
+      ? `本机装有 ${VOICES.length} 个德语音色，只列德语——英语音色会把德语发音规则全读错`
+      : '本机没有德语音色，见下方提示'}</small></div>
+      <select id="voice"${VOICES.length ? '' : ' disabled'}>${VOICES.length ? VOICES.map(v =>
+      `<option value="${esc(v.voiceURI)}"${v.voiceURI === pickVoice()?.voiceURI ? ' selected' : ''}>${esc(v.name)} (${esc(v.lang)})</option>`).join('')
+      : '<option>未找到德语语音</option>'}</select></div>
+    <div class="set"><div class="lb">语音来源<small>系统=本机德语音色，离线可用；谷歌在线=更自然，但每次朗读都要联网；字母表另有内置本地录音</small></div>
       <select id="tts">
         <option value="sys"${S.set.tts === 'sys' ? ' selected' : ''}>系统语音（离线）</option>
         <option value="g"${S.set.tts === 'g' ? ' selected' : ''}>谷歌在线（更清晰）</option>
@@ -1151,6 +1160,11 @@ function renderMe() {
     <div class="set"><div class="lb">翻卡自动朗读<small>显示新卡片时自动读一遍</small></div>
       <button class="sw${S.set.autoSpeak ? ' on' : ''}" id="auto"><i></i></button></div>
   </div>
+  ${VOICES.length ? '' : `<div class="ltip" style="margin-top:8px"><b>!</b>
+    系统里没装德语语音，朗读会用默认音色读，发音不可信。<br>
+    macOS：系统设置 → 辅助功能 → 朗读内容 → 系统语音 → 管理语音，勾选德语。<br>
+    iPhone：设置 → 辅助功能 → 朗读内容 → 声音 → 德语。<br>
+    装好后回到这里刷新页面。也可以先把「语音来源」切到谷歌在线。</div>`}
   <button class="btn line blk" id="test">${IC.spk} 试听：Entschuldigung</button>
 
   <div class="sec-t">学习记录</div>
