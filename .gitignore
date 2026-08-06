@@ -8,7 +8,8 @@ __pycache__/
 materials/*
 !materials/README.md
 
-# 预生成的德语音频（约 50 MB / 3200 个文件）。
-# 要不要入库取决于部署方式：Vercel 从 GitHub 拉代码，那就得入库；
-# 若改成单独上传或放对象存储，把下面两行留着即可。
-# audio/
+.venv/
+
+# 预生成的德语音频必须入库：Vercel 从 GitHub 拉代码部署，不进仓库就上不了线。
+# 三个音色约 50 MB / 4800 个文件，在 Vercel Hobby 的限额内
+# （单次部署 100 MB、15000 个文件）。

@@ -766,7 +766,7 @@ loadVoices();
 /* 「发音」那行的小字。选项少不是应用挑剩的，得让用户知道数是谁给的 */
 function voiceNote() {
   if (!ALL_VOICES.length) return '正在读取系统语音…';
-  if (msVoice()) return '走微软预生成音频，放过一次后浏览器会缓存，之后离线也能用';
+  if (msVoice()) return '预生成音频，德语原生音质；播过一次浏览器会缓存，之后离线也能用';
   if (S.set.tts === 'g') return '走谷歌德语，每次朗读要联网；本机音色见下拉里的其余项';
   return `本机德语音色 ${VOICES.length} 个（浏览器共交出 ${ALL_VOICES.length} 个语音）。`
        + (VOICES.length > 1 ? '只列德语——英语音色会把德语发音规则全读错' : '只有一个是浏览器的限制，见下方');
@@ -798,7 +798,7 @@ function stopSpeak() {
   if (gAudio) { try { gAudio.pause(); } catch (e) {} }
   if (laAudio) { try { laAudio.pause(); } catch (e) {} }
 }
-/* 微软预生成音频：构建期用 Azure Speech 合成好当静态文件发，
+/* 预生成音频：构建期合成好当静态文件发（见 src/make_audio.py），
    运行时不需要密钥也不需要接口，浏览器缓存后离线也能用。
    文件名由文本算出，算法必须和 src/make_audio.py 里的 clip_id 完全一致。 */
 const FNV_OFF = 0xcbf29ce484222325n, FNV_PRIME = 0x100000001b3n, U64 = 0xFFFFFFFFFFFFFFFFn;
@@ -1202,7 +1202,7 @@ function renderMe() {
       <select id="voice">${VOICES.map(v =>
         `<option value="${esc(v.voiceURI)}"${(!S.set.tts || S.set.tts === 'sys') && v.voiceURI === pickVoice()?.voiceURI ? ' selected' : ''}>${esc(v.name)}（本机 · 离线）</option>`).join('')}
         ${DATA.audio.map(a =>
-          `<option value="__ms:${a.v}__"${S.set.tts === 'ms:' + a.v ? ' selected' : ''}>${esc(a.zh)}（预生成 · 首次需联网）</option>`).join('')}
+          `<option value="__ms:${a.v}__"${S.set.tts === 'ms:' + a.v ? ' selected' : ''}>${esc(a.zh)}</option>`).join('')}
         <option value="__g__"${S.set.tts === 'g' ? ' selected' : ''}>谷歌德语（更自然 · 需联网）</option>
       </select></div>
     <div class="set"><div class="lb">翻卡自动朗读<small>显示新卡片时自动读一遍</small></div>

@@ -200,5 +200,5 @@ if __name__ == '__main__':
           % (len(data['aussprache']['alphabet']),
              sum(len(g['items']) for g in data['aussprache']['regeln']),
              len(data['aussprache']['paare'])))
-    print('  微软音色 %s' % (', '.join(a['v'] for a in data['audio']) or '未生成（跑 src/make_audio.py）'))
+    print('  朗读音色 %s' % (', '.join(a['v'] for a in data['audio']) or '未生成（跑 src/make_audio.py）'))
     print('  %d KB' % round(os.path.getsize(dst) / 1024))

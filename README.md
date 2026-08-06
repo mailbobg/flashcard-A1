@@ -59,8 +59,9 @@
 - **本机德语音色**（离线）。数量由浏览器决定：Safari 与 iPhone 每个 locale 只交出一个，
   德语通常只有 Anna；Chrome 会列出系统里装的全部（本机 9 个）。
   英语程序不需要操心这件事，是因为 macOS 装了 7 个英语 locale，Safari 里就有 25 个音色可选
-- **微软预生成音频**（推荐）。构建期用 Azure Speech 合成好当静态文件发，运行时不需要密钥
-  也不需要接口，播过一次浏览器就缓存。密钥只从环境变量读，不进代码也不进仓库
+- **预生成音频**（默认推荐）：Katja（女）· Conrad（男）· Seraphina（多语言），德语 neural 音质。
+  构建期合成好当静态文件发，运行时不依赖任何接口，播过一次浏览器就缓存。
+  这也顺带绕开了上面那条限制——手机上原本只有 Anna，现在三个音色都能选
 - **谷歌在线**，每次朗读都要联网
 
 另有固定 0.4 倍的慢速，语速可调。
@@ -89,21 +90,20 @@ python3 src/parse_wortliste.py materials/official/A1_SD1_Wortliste_02.pdf   # �
 python3 src/build.py                                                       # 生成 index.html
 ```
 
-想要微软音色（可选，约 3.1 万字符，Azure 免费层每月 50 万）：
+重新生成朗读音频（词表变动后才需要，用 edge-tts，免费且不需要账号）：
 
 ```bash
-export AZURE_SPEECH_KEY=<密钥>
-export AZURE_SPEECH_REGION=<区域>
-python3 src/make_audio.py --dry-run   # 先看要合成多少
-python3 src/make_audio.py             # 生成 audio/，可重复运行，已存在的跳过
-python3 src/build.py                  # 重新构建，下拉里才会出现微软选项
+python3 -m venv .venv && .venv/bin/pip install edge-tts
+.venv/bin/python src/make_audio.py --dry-run   # 先看要合成多少
+.venv/bin/python src/make_audio.py             # 生成 audio/，可重复运行，已有的跳过
+python3 src/build.py                           # 重新构建，下拉里才会出现这些音色
 ```
 
 | 文件 | 说明 |
 | --- | --- |
 | `src/parse_wortliste.py` | 解析官方词表 PDF：按页现算基准列、展开复数标记、合并折行复合词 |
 | `src/wortliste.json` | 解析产物，687 条 |
-| `src/make_audio.py` | 用 Azure Speech 预生成德语音频，产出 `audio/<音色>/<id>.mp3` |
+| `src/make_audio.py` | 用 edge-tts 预生成德语音频，产出 `audio/<音色>/<id>.mp3`；断了重跑即可 |
 | `src/aussprache.py` | 第 0 关发音内容（字母表 / 规则 / 最小对立对），手工编写 |
 | `src/lexikon.py` | 685 条的主题归类与中文释义，手工编写；构建期校验与词表一一对应 |
 | `src/tpl.html` | 应用模板，含样式、逻辑与内嵌字体，`__DATA__` 为数据占位符 |
