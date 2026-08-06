@@ -456,6 +456,42 @@ input[type=range]{width:118px;accent-color:var(--color-accent);font-family:inher
 /* ---------- 专项练习 ---------- */
 #drill{position:fixed;inset:0;background:var(--color-background-body);z-index:55;display:none;flex-direction:column}
 #drill.on{display:flex}
+/* ---------- 语法课 ---------- */
+#gram{position:fixed;inset:0;background:var(--color-background-body);z-index:55;display:none;flex-direction:column}
+#gram.on{display:flex}
+#grBody{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:var(--spacing-2) var(--spacing-5) calc(var(--safe-b) + var(--spacing-6))}
+.gt{font-size:var(--font-size-base);line-height:1.85;margin:var(--spacing-4) 2px}
+.gt b,.gw b,.grb b{font-weight:var(--font-weight-semibold);color:var(--color-text-primary)}
+/* 规则框：这一课真正要背下来的那句话，紫色和语法课的编号呼应 */
+.gr{background:var(--color-background-card);border:var(--border-width) solid var(--color-border);
+  border-left:3px solid var(--color-text-purple);border-radius:var(--radius-container);
+  padding:var(--spacing-4);margin-top:var(--spacing-4);box-shadow:var(--shadow-low)}
+.grt{font-size:var(--font-size-lg);font-weight:var(--font-weight-semibold);letter-spacing:-.01em;
+  color:var(--color-text-purple)}
+.grb{font-size:var(--font-size-base);line-height:1.75;margin-top:7px;color:var(--color-text-primary)}
+/* 坑：中文母语者最容易错的地方 */
+.gw{background:var(--color-warning-muted);color:var(--color-text-yellow);
+  border-radius:var(--radius-container);padding:12px var(--spacing-4);
+  margin-top:var(--spacing-3);font-size:var(--font-size-sm);line-height:1.75}
+.gtabw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:var(--spacing-3)}
+.gtab{border-collapse:collapse;width:100%;font-size:var(--font-size-sm)}
+.gtab th{text-align:left;font-weight:var(--font-weight-medium);color:var(--color-text-secondary);
+  padding:6px 10px 6px 0;border-bottom:var(--border-width) solid var(--color-border-emphasized);white-space:nowrap}
+.gtab td{padding:5px 10px 5px 0;border-bottom:var(--border-width) solid var(--color-border);vertical-align:middle}
+.gtab td .exw{padding:5px 10px;font-size:var(--font-size-base);white-space:nowrap}
+.gbsp{margin-top:var(--spacing-3)}
+.gb{display:flex;align-items:center;gap:10px;background:var(--color-background-muted);
+  border-radius:var(--radius-container);padding:12px var(--spacing-4);margin-bottom:7px}
+.gb:active{background:var(--color-accent-muted)}
+/* 德语和中译必须上下排：横排时长句会把德语挤成一行几个字 */
+.gb .gtx{flex:1;min-width:0}
+.gde{font-size:var(--font-size-base);font-weight:var(--font-weight-medium);line-height:1.5}
+.gzh{font-size:var(--font-size-sm);color:var(--color-text-secondary);margin-top:3px}
+.gb .gsp{flex:0 0 auto;color:var(--color-text-secondary)}
+.gb .gsp svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.gdrill{margin-top:var(--spacing-5)}
+
 #setWrap{position:fixed;inset:0;background:var(--color-background-body);z-index:56;display:none;flex-direction:column}
 #setWrap.on{display:flex}
 #setBody{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:var(--spacing-2) var(--spacing-5) calc(var(--safe-b) + var(--spacing-6))}
@@ -636,6 +672,13 @@ input[type=range]{width:118px;accent-color:var(--color-accent);font-family:inher
     <div class="pg" id="drScore"></div>
   </div>
   <div id="drBody"></div>
+</div>
+<div id="gram">
+  <div class="stbar">
+    <button class="iconbtn" id="grClose"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div class="drt" id="grTitle">语法</div>
+  </div>
+  <div id="grBody"></div>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -981,6 +1024,15 @@ function renderHome() {
     <div class="n">${DATA.aussprache.regeln.reduce((n, g) => n + g.items.length, 0)} 条</div>
   </button>
 
+  <div class="sec-t">语法 · 先讲明白再去练</div>
+  <div class="tiny muted" style="margin:-4px 2px 10px">
+    背单词之前先过这五课。没学过就直接做题，那是猜谜不是练习。</div>
+  ${DATA.grammatik.map(g => `<button class="card chap" data-gram="${g.id}">
+    <div class="no" style="background:var(--color-text-purple)">${g.no}</div>
+    <div class="bd"><div class="t">${esc(g.title)}</div><div class="e">${esc(g.sub)}</div></div>
+    <div class="n">${g.blocks.filter(b => b.k === 'r').length} 条规则</div>
+  </button>`).join('')}
+
   <div class="sec-t">今日任务</div>
   <button class="btn pri blk" id="goDue">${due ? `开始复习 · ${due} 词到期` : '暂无到期复习，去学新词 →'}</button>
   <div class="chipbar" style="margin-top:8px">
@@ -1013,6 +1065,7 @@ function renderHome() {
   </div>
   <div class="credit">词表与主题划分均来自 Goethe-Zertifikat A1 官方 Wortliste</div>`;
 
+  view.querySelectorAll('[data-gram]').forEach(b => b.onclick = () => openGram(b.dataset.gram));
   $('goLaut').onclick = () => { curView = 'laut';
     [...$('tabs').children].forEach(x => x.classList.toggle('on', x.dataset.t === 'laut'));
     view.scrollTop = 0; render(); };
@@ -1038,6 +1091,54 @@ function renderHome() {
   view.querySelectorAll('[data-drill]').forEach(b => b.onclick = () => openDrill(b.dataset.drill));
 }
 const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0;[a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+/* ===================== 语法课 ===================== */
+/* 讲解块里的 <b> 是内容自带的强调，要保留，所以不能整段 esc()。
+   这些文字全部由 src/grammatik.py 写死，不含用户输入。 */
+function gramBlock(b) {
+  if (b.k === 't') return `<p class="gt">${b.html}</p>`;
+  if (b.k === 'w') return `<div class="gw">${b.html}</div>`;
+  if (b.k === 'r') return `<div class="gr"><div class="grt">${esc(b.title)}</div>
+    <div class="grb">${b.html}</div></div>`;
+  if (b.k === 'tab') return `<div class="gtabw"><table class="gtab">
+    <tr>${b.head.map(h => `<th>${esc(h)}</th>`).join('')}</tr>
+    ${b.rows.map(r => `<tr>${r.map(c => c.startsWith('*')
+      ? `<td><button class="exw" data-say="${esc(c.slice(1))}">${esc(c.slice(1))}</button></td>`
+      : `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}
+  </table></div>`;
+  if (b.k === 'bsp') return `<div class="gbsp">${b.items.map(x => `
+    <div class="gb" data-say="${esc(x.de)}">
+      <div class="gtx"><div class="gde">${esc(x.de)}</div><div class="gzh">${esc(x.zh)}</div></div>
+      <span class="gsp">${IC.spk}</span>
+    </div>`).join('')}</div>`;
+  if (b.k === 'drill') return `<button class="btn pri blk gdrill" data-godrill="${b.to}">
+    ${esc(b.label)} →</button>`;
+  return '';
+}
+function openGram(id) {
+  const g = DATA.grammatik.find(x => x.id === id);
+  if (!g) return;
+  stopSpeak();
+  $('grTitle').textContent = `${g.no} · ${g.title}`;
+  $('grBody').innerHTML = `
+    <div class="card panel" style="margin-top:4px">
+      <div class="ltag" style="background:var(--color-text-purple)">第 ${g.no} 课</div>
+      <h2 class="ltitle">${esc(g.title)}</h2>
+      <div class="lsub">${esc(g.sub)}</div>
+      <div class="lintro">${esc(g.why)}</div>
+    </div>
+    ${g.blocks.map(gramBlock).join('')}
+    <div class="credit">点任何德语都能听　·　例句朗读用当前选定的音源</div>`;
+  $('grBody').scrollTop = 0;
+  $('gram').classList.add('on');
+}
+$('grClose').onclick = () => { stopSpeak(); $('gram').classList.remove('on'); };
+$('grBody').onclick = e => {
+  const d = e.target.closest('[data-godrill]');
+  if (d) { $('gram').classList.remove('on'); openDrill(d.dataset.godrill); return; }
+  const t = e.target.closest('[data-say]');
+  if (t) say(t.dataset.say);
+};
 
 const byThema = c => ALL.filter(w => w.thema === c);
 /* 主题行：右边那条是已掌握的比例，一眼看出哪个主题还是空的 */
@@ -1776,6 +1877,7 @@ function toast(m) {
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     if ($('setWrap').classList.contains('on')) { $('setClose').click(); return; }
+    if ($('gram').classList.contains('on')) { $('grClose').click(); return; }
     if ($('drill').classList.contains('on')) { $('drClose').click(); return; }
     if ($('study').classList.contains('on')) { $('stClose').click(); return; }
   }

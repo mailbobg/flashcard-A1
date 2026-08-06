@@ -49,7 +49,7 @@ def texts():
     整体后移，脚本闷声生成了字母名、漏掉了字母表例词。字段结构只该有
     一处知道，就是 build.py。
     """
-    from build import load_woerter, aussprache_data
+    from build import load_woerter, aussprache_data, grammatik_texts
     out = []
     for w in load_woerter():
         for item in [w] + w.get('derived', []):
@@ -61,6 +61,7 @@ def texts():
         out.append(L['name'])     # 字母名：内置录音缺失时的回落
     out += [x for g in a['regeln'] for r in g['items'] for x in r['ex']]
     out += [p[k] for p in a['paare'] for k in ('a', 'b')]
+    out += grammatik_texts()
     seen, uniq = set(), []
     for t in out:
         t = (t or '').strip()

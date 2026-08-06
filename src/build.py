@@ -10,6 +10,7 @@
   aussprache.py    第 0 章发音关，手工编写
   audio/index.json 微软音色清单，由 make_audio.py 生成（可选）
   lexikon.py       主题归类与中文释义，手工编写
+  grammatik.py     语法课（数字 / 性别 / 变位 / 语序 / 格），手工编写
 """
 import json, os, re, sys
 
@@ -20,6 +21,7 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 from aussprache import ALPHABET, REGELN, MINIMALPAARE   # noqa: E402
 from lexikon import WORDS, THEMEN, EXTRA                # noqa: E402
+from grammatik import LEKTIONEN                         # noqa: E402
 from zergliederung import SATZ                          # noqa: E402
 
 
@@ -93,6 +95,34 @@ def load_woerter():
         else:
             out.append(item)
             cur = out[-1]
+    return out
+
+
+def grammatik_data():
+    """语法课。块用短元组写，这里摊成前端好渲染的对象。"""
+    def block(b):
+        k = b[0]
+        if k == 't':     return {'k': 't', 'html': b[1]}
+        if k == 'w':     return {'k': 'w', 'html': b[1]}
+        if k == 'r':     return {'k': 'r', 'title': b[1], 'html': b[2]}
+        if k == 'tab':   return {'k': 'tab', 'head': b[1], 'rows': b[2]}
+        if k == 'bsp':   return {'k': 'bsp', 'items': [{'de': d, 'zh': z} for d, z in b[1]]}
+        if k == 'drill': return {'k': 'drill', 'to': b[1], 'label': b[2]}
+        raise SystemExit('语法课里有未知的块类型: %r' % (k,))
+    return [{'id': L['id'], 'no': L['no'], 'title': L['title'], 'sub': L['sub'],
+             'why': L['why'], 'blocks': [block(b) for b in L['blocks']]}
+            for L in LEKTIONEN]
+
+
+def grammatik_texts():
+    """语法课里所有可朗读的德语：例句，以及表格里以 * 开头的单元格。"""
+    out = []
+    for L in LEKTIONEN:
+        for b in L['blocks']:
+            if b[0] == 'bsp':
+                out += [d for d, _ in b[1]]
+            elif b[0] == 'tab':
+                out += [c[1:] for r in b[2] for c in r if c.startswith('*')]
     return out
 
 
@@ -196,6 +226,7 @@ def check(data):
 if __name__ == '__main__':
     woerter = load_woerter()
     data = {'woerter': woerter, 'aussprache': aussprache_data(), 'audio': audio_index(),
+            'grammatik': grammatik_data(),
             'satz': SATZ,
             'themen': [{'c': c, 'zh': zh, 'sub': sub, 'amt': True} for c, zh, sub in THEMEN]
                     + [{'c': c, 'zh': zh, 'sub': sub, 'amt': False} for c, zh, sub in EXTRA]}
@@ -217,6 +248,9 @@ if __name__ == '__main__':
     print('built %s' % dst)
     print('  词条 %d（名词 %d，其中复数已展开 %d）'
           % (n, len(nouns), sum(1 for x in nouns if x['pl'])))
+    print('  语法课 %d 篇（%d 块 · %d 条可朗读）'
+          % (len(data['grammatik']), sum(len(g['blocks']) for g in data['grammatik']),
+             len(set(grammatik_texts()))))
     print('  发音关：字母 %d · 规则 %d 条 · 最小对立对 %d 组'
           % (len(data['aussprache']['alphabet']),
              sum(len(g['items']) for g in data['aussprache']['regeln']),
