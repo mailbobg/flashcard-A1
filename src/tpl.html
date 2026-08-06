@@ -685,6 +685,26 @@ input[type=range]{width:118px;accent-color:var(--color-accent);font-family:inher
 <script>
 const DATA = __DATA__;
 
+/* ===================== 按需加载 ===================== */
+/* 语法课与例句拆解是大块数据，构建期已拆成 data/*.json 单独发布，
+   这里用到才 fetch 并缓存。首屏 HTML 因此小很多，微信内置浏览器不会再
+   因为慢响应而放弃打开。成功后写回 DATA[key]，各渲染点照常读取。 */
+const LZ = {};
+function lazyLoad(key, url) {
+  if (LZ[key] === undefined) {
+    LZ[key] = fetch(url)
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(d => { DATA[key] = d; return d; })
+      .catch(() => { LZ[key] = null; });
+  }
+  return LZ[key] || Promise.resolve(null);   // 失败后返回已决 null：不重试、调用方照常 then
+}
+/* 页面加载完的低优先级时机后台预取，真点开时通常已就绪 */
+window.addEventListener('load', () => {
+  lazyLoad('grammatik', 'data/grammatik.json');
+  lazyLoad('satz', 'data/satz.json');
+});
+
 /* ===================== 数据索引 ===================== */
 /* 官方词表用缩进表示派生关系，构建时已把派生词并进主词条的 derived。
    这里把两级摊平成一个可检索的列表，但保留 base 指向主词条。 */
@@ -755,7 +775,7 @@ function speakLocal(kind, letter, text) {
   if (kind === 'letter' && LA[letter]) {
     stopSpeak();
     try {
-      laAudio = new Audio('data:audio/mp4;base64,' + LA[letter]);
+      laAudio = new Audio('data:audio/mpeg;base64,' + LA[letter]);
       laAudio.play().catch(() => {});
     } catch (e) {}
     return true;
@@ -1017,7 +1037,13 @@ $('tabs').onclick = e => {
 };
 
 /* ---------- 首页 ---------- */
+/* 「学习」页太长，用分段切换收拢成三块：总览（进度+今日任务）、语法、主题 */
+let homeTab = 'overview';
 function renderHome() {
+  /* 语法课数据按需加载：JSON 就绪后若还在首页就重绘（仅成功时） */
+  if (!DATA.grammatik.length) {
+    lazyLoad('grammatik', 'data/grammatik.json').then(g => { if (g && curView === 'home') renderHome(); });
+  }
   const done = ALL.filter(isMastered).length;
   const started = ALL.filter(w => !isNew(w)).length;
   const due = ALL.filter(isDue).length;
@@ -1025,7 +1051,14 @@ function renderHome() {
   const C = 2 * Math.PI * 35;
   const byArt = a => NOUNS.filter(w => w.art === a).length;
 
-  view.innerHTML = `
+  const seg = `<div class="dseg" style="margin-top:4px">
+    <button data-ht="overview" class="${homeTab === 'overview' ? 'on' : ''}">总览</button>
+    <button data-ht="gram" class="${homeTab === 'gram' ? 'on' : ''}">语法</button>
+    <button data-ht="thema" class="${homeTab === 'thema' ? 'on' : ''}">主题</button>
+  </div>`;
+
+  let body;
+  if (homeTab === 'overview') body = `
   <div class="card panel dash">
     <div class="ring">
       <svg width="86" height="86">
@@ -1052,15 +1085,6 @@ function renderHome() {
     <div class="n">${DATA.aussprache.regeln.reduce((n, g) => n + g.items.length, 0)} 条</div>
   </button>
 
-  <div class="sec-t">语法 · 先讲明白再去练</div>
-  <div class="tiny muted" style="margin:-4px 2px 10px">
-    背单词之前先过这五课。没学过就直接做题，那是猜谜不是练习。</div>
-  ${DATA.grammatik.map(g => `<button class="card chap" data-gram="${g.id}">
-    <div class="no" style="background:var(--color-text-purple)">${g.no}</div>
-    <div class="bd"><div class="t">${esc(g.title)}</div><div class="e">${esc(g.sub)}</div></div>
-    <div class="n">${g.blocks.filter(b => b.k === 'r').length} 条规则</div>
-  </button>`).join('')}
-
   <div class="sec-t">今日任务</div>
   <button class="btn pri blk" id="goDue">${due ? `开始复习 · ${due} 词到期` : '暂无到期复习，去学新词 →'}</button>
   <div class="chipbar" style="margin-top:8px">
@@ -1068,8 +1092,24 @@ function renderHome() {
     <button class="btn line" id="goHard" style="flex:1">难词本</button>
     <button class="btn line" id="goAll" style="flex:1">全部乱序</button>
   </div>
+  <div class="credit">词表与主题划分均来自 Goethe-Zertifikat A1 官方 Wortliste</div>`;
 
-  <div class="sec-t">按主题 · 考纲的十个范围</div>
+  else if (homeTab === 'gram') body = `
+  <div class="card panel" style="margin-top:4px">
+    <div class="ltag" style="background:var(--color-text-purple)">语法</div>
+    <h2 class="ltitle">先讲明白再去练</h2>
+    <div class="lintro">背单词之前先过语法课。没学过就直接做题，那是猜谜不是练习。
+      每课讲完接对应测验。</div>
+  </div>
+  ${DATA.grammatik.map(g => `<button class="card chap" data-gram="${g.id}">
+    <div class="no" style="background:var(--color-text-purple)">${g.no}</div>
+    <div class="bd"><div class="t">${esc(g.title)}</div><div class="e">${esc(g.sub)}</div></div>
+    <div class="n">${g.blocks.filter(b => b.k === 'r').length} 条规则</div>
+  </button>`).join('')}
+  <div class="credit">共 ${DATA.grammatik.length} 课 · 覆盖官方考纲语法清单</div>`;
+
+  else body = `
+  <div class="sec-t" style="margin-top:12px">按主题 · 考纲的十个范围</div>
   ${DATA.themen.filter(t => t.amt).map(t => themaRow(t)).join('')}
 
   <div class="sec-t">主题之外</div>
@@ -1091,22 +1131,12 @@ function renderHome() {
       <span class="n">${ALL.length - NOUNS.length}</span>
     </div>
   </div>
-  <div class="credit">词表与主题划分均来自 Goethe-Zertifikat A1 官方 Wortliste</div>`;
+  <div class="credit">点任意主题直接开始背这组词</div>`;
 
+  view.innerHTML = seg + body;
+
+  view.querySelectorAll('[data-ht]').forEach(b => b.onclick = () => { homeTab = b.dataset.ht; renderHome(); });
   view.querySelectorAll('[data-gram]').forEach(b => b.onclick = () => openGram(b.dataset.gram));
-  $('goLaut').onclick = () => { curView = 'laut';
-    [...$('tabs').children].forEach(x => x.classList.toggle('on', x.dataset.t === 'laut'));
-    view.scrollTop = 0; render(); };
-  $('goDue').onclick = () => {
-    const q = ALL.filter(isDue).sort((a, b) => S.prog[a.w].due - S.prog[b.w].due);
-    startStudy(q.length ? q : ALL.filter(isNew).slice(0, 20), '今日复习');
-  };
-  $('goNew').onclick = () => startStudy(ALL.filter(isNew).slice(0, 20), '新词');
-  $('goHard').onclick = () => {
-    const q = ALL.filter(w => (S.prog[w.w]?.wrong || 0) > 0 || S.prog[w.w]?.star);
-    q.length ? startStudy(q, '难词本') : toast('还没有标记的难词');
-  };
-  $('goAll').onclick = () => startStudy(shuffle(ALL.slice()), '全部乱序');
   view.querySelectorAll('[data-thema]').forEach(b => b.onclick = () => {
     const t = DATA.themen.find(x => x.c === b.dataset.thema);
     startStudy(byThema(t.c).slice(), t.zh);
@@ -1117,6 +1147,24 @@ function renderHome() {
     startStudy(list.slice(), a === 'rest' ? '动词与其他' : a + ' 名词');
   });
   view.querySelectorAll('[data-drill]').forEach(b => b.onclick = () => openDrill(b.dataset.drill));
+  const gl = $('goLaut');
+  if (gl) gl.onclick = () => { curView = 'laut';
+    [...$('tabs').children].forEach(x => x.classList.toggle('on', x.dataset.t === 'laut'));
+    view.scrollTop = 0; render(); };
+  const gd = $('goDue');
+  if (gd) gd.onclick = () => {
+    const q = ALL.filter(isDue).sort((a, b) => S.prog[a.w].due - S.prog[b.w].due);
+    startStudy(q.length ? q : ALL.filter(isNew).slice(0, 20), '今日复习');
+  };
+  const gn = $('goNew');
+  if (gn) gn.onclick = () => startStudy(ALL.filter(isNew).slice(0, 20), '新词');
+  const gh = $('goHard');
+  if (gh) gh.onclick = () => {
+    const q = ALL.filter(w => (S.prog[w.w]?.wrong || 0) > 0 || S.prog[w.w]?.star);
+    q.length ? startStudy(q, '难词本') : toast('还没有标记的难词');
+  };
+  const ga = $('goAll');
+  if (ga) ga.onclick = () => startStudy(shuffle(ALL.slice()), '全部乱序');
 }
 const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0;[a[i], a[j]] = [a[j], a[i]]; } return a; };
 
@@ -1442,6 +1490,12 @@ $('stStar').onclick = () => {
 function drawCard(speak) {
   const w = Q[qi];
   flipped = false;
+  /* 例句拆解按需加载：satz 数据就绪后重绘当前卡背，让拆解显示出来 */
+  if (!Object.keys(DATA.satz).length) {
+    lazyLoad('satz', 'data/satz.json').then(s => {
+      if (s && $('study').classList.contains('on') && $('faceB').isConnected) drawCard(false);
+    });
+  }
   $('card3d').classList.remove('flip');
   $('stPg').textContent = `${qi + 1}/${Q.length}`;
   $('stProg').style.width = (qi / Q.length * 100) + '%';

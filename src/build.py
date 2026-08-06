@@ -224,6 +224,21 @@ def check(data):
     return len(heads)   # 摊平后的总条数，与界面里的 ALL.length 一致
 
 
+def split_big_data(data):
+    """把语法课与例句拆解写成外部 JSON，__DATA__ 里只留空占位。
+
+    原因：语法课（≈40 KB）+ 例句拆解（≈350 KB）是大头，单文件 index.html
+    一度 1.3 MB，微信内置浏览器对慢响应会放弃、页面打不开。这两块只有在
+    点开对应页面时才需要，拆出去按需 fetch，首屏 HTML 立减近三成。
+    产物 data/grammatik.json、data/satz.json 与 audio/ 一起随仓库部署。"""
+    os.makedirs(os.path.join(ROOT, 'data'), exist_ok=True)
+    for key, f in (('grammatik', 'grammatik.json'), ('satz', 'satz.json')):
+        json.dump(data[key], open(os.path.join(ROOT, 'data', f), 'w', encoding='utf-8'),
+                  ensure_ascii=False, separators=(',', ':'))
+    data['grammatik'] = []
+    data['satz'] = {}
+
+
 if __name__ == '__main__':
     woerter = load_woerter()
     data = {'woerter': woerter, 'aussprache': aussprache_data(), 'audio': audio_index(),
@@ -232,8 +247,10 @@ if __name__ == '__main__':
             'themen': [{'c': c, 'zh': zh, 'sub': sub, 'amt': True} for c, zh, sub in THEMEN]
                     + [{'c': c, 'zh': zh, 'sub': sub, 'amt': False} for c, zh, sub in EXTRA]}
     n = check(data)
+    n_gram, n_satz = len(data['grammatik']), len(data['satz'])
 
     nouns = [x for x in woerter if x['pos'] == 'noun']
+    split_big_data(data)
     tpl = open(os.path.join(HERE, 'tpl.html'), encoding='utf-8').read()
     for ph in ('__DATA__', '__BASE__', '__ICONS__', '__ALPH_AUDIO__'):
         assert ph in tpl, 'tpl.html 缺 %s 占位符' % ph
@@ -251,9 +268,9 @@ if __name__ == '__main__':
           % (n, len(nouns), sum(1 for x in nouns if x['pl'])))
     print('  数字 0-%d · 报时 %d 句（构建期生成，测验直接查表）'
           % (zahlen.MAX, len(data['num']['uhr'])))
-    print('  语法课 %d 篇（%d 块 · %d 条可朗读）'
-          % (len(data['grammatik']), sum(len(g['blocks']) for g in data['grammatik']),
-             len(set(grammatik_texts()))))
+    print('  语法课 %d 篇 · %d 条可朗读 → data/grammatik.json 按需加载'
+          % (n_gram, len(set(grammatik_texts()))))
+    print('  例句拆解 %d 条 → data/satz.json 按需加载' % n_satz)
     print('  发音关：字母 %d · 规则 %d 条 · 最小对立对 %d 组'
           % (len(data['aussprache']['alphabet']),
              sum(len(g['items']) for g in data['aussprache']['regeln']),
