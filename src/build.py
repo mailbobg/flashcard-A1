@@ -19,6 +19,7 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 from aussprache import ALPHABET, REGELN, MINIMALPAARE   # noqa: E402
 from lexikon import WORDS, THEMEN, EXTRA                # noqa: E402
+from zergliederung import SATZ                          # noqa: E402
 
 
 def logo_svg():
@@ -112,12 +113,32 @@ def check(data):
     dup = [p for p in a['paare'] if p['a'] == p['b']]
     if dup:
         raise SystemExit('最小对立对两侧相同: %s' % dup)
+    # 例句拆解校验：键必须逐字存在于词表例句中（含 derived 派生词的例句）；
+    # flow 德块必须能拼回原句
+    def all_ex(x):
+        yield from x['ex']
+        for d in x.get('derived') or []:
+            yield from d['ex']
+    exs = {e for x in w for e in all_ex(x)}
+    miss = [k for k in data['satz'] if k not in exs]
+    if miss:
+        raise SystemExit('拆解键不在词表例句中: %s' % miss[:5])
+    for k, t in data['satz'].items():
+        j = ''.join(b for b, _, _ in t['flow'])
+        norm = lambda s: re.sub(r'[^a-zA-ZäöüÄÖÜß0-9]', '', s)
+        if norm(j) != norm(k):
+            raise SystemExit('flow 拼不回原句: %r | %r' % (k, j))
+        if 'klammer' in t:
+            l, r = t['klammer'][1], t['klammer'][3]
+            if l not in k or (r and r not in k):
+                raise SystemExit('klammer 成分不在句内: %r' % k)
     return len(heads)   # 摊平后的总条数，与界面里的 ALL.length 一致
 
 
 if __name__ == '__main__':
     woerter = load_woerter()
     data = {'woerter': woerter, 'aussprache': aussprache_data(),
+            'satz': SATZ,
             'themen': [{'c': c, 'zh': zh, 'sub': sub, 'amt': True} for c, zh, sub in THEMEN]
                     + [{'c': c, 'zh': zh, 'sub': sub, 'amt': False} for c, zh, sub in EXTRA]}
     n = check(data)

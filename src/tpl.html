@@ -500,6 +500,62 @@ input[type=range]{width:118px;accent-color:var(--color-accent);font-family:inher
 .drlist .row .w{font-size:var(--font-size-lg)}
 .drlist .row .z{font-size:var(--font-size-sm);color:var(--color-text-secondary);margin-top:2px}
 .drstat{font-size:var(--font-size-sm);color:var(--color-text-secondary);margin:var(--spacing-3) 2px 0;line-height:1.7}
+
+/* ---------- 例句拆解（Zergliederung） ---------- */
+.tr{margin-top:var(--spacing-4)}
+.tr-hd{
+  display:flex;align-items:center;gap:9px;flex-wrap:wrap;
+  font-size:var(--font-size-base);font-weight:var(--font-weight-semibold);color:var(--color-text-purple);
+}
+.tr .pat{
+  display:inline-block;font-size:var(--font-size-xs);font-weight:var(--font-weight-semibold);
+  background:var(--color-accent-muted);border-radius:var(--radius-full);padding:4px 11px;letter-spacing:.03em;
+  color:var(--color-text-primary);
+}
+.tr-step{
+  display:flex;align-items:center;gap:8px;margin:15px 0 9px;
+  font-size:var(--font-size-xs);color:var(--color-text-secondary);font-weight:var(--font-weight-medium);
+}
+.tr-step::after{content:"";flex:1;height:var(--border-width);background:var(--color-border-emphasized);opacity:.55}
+.flow{margin-top:10px;border-left:2px solid var(--color-brand);padding-left:12px}
+.fl{display:flex;align-items:baseline;gap:10px;padding:5px 0;flex-wrap:wrap}
+.fl + .fl{border-top:var(--border-width) dashed var(--color-border-emphasized)}
+.fl .fe{font-size:var(--font-size-lg);font-weight:var(--font-weight-semibold);flex:1;min-width:0}
+.fl .fz{font-size:var(--font-size-base);flex:0 0 auto;margin-left:auto;text-align:right;font-weight:var(--font-weight-medium)}
+.tr .s{color:var(--color-text-green)}
+.tr .v{color:var(--color-text-blue)}
+.tr .o{color:var(--color-text-red)}
+.tr .a{color:var(--color-text-purple)}
+.tr .d{color:var(--color-text-yellow)}
+.tr .c{color:var(--color-text-cyan)}
+.tr .x{color:var(--color-text-primary)}
+/* 句框：框左 + 框中 + 框右，用上下边框连成 U 形 */
+.klamp{display:flex;flex-wrap:wrap;align-items:stretch;margin-top:9px}
+.klamp .pre{display:flex;align-items:center;padding:7px 11px;border-radius:var(--radius-inner) 0 0 var(--radius-inner);
+  border:2px solid var(--color-brand);border-right-width:1px;background:var(--color-background-card);font-weight:var(--font-weight-semibold)}
+.klamp .mid{display:flex;align-items:center;padding:7px 11px;border-top:2px solid var(--color-brand);border-bottom:2px solid var(--color-brand);
+  color:var(--color-text-secondary);font-size:var(--font-size-sm)}
+.klamp .right{display:flex;align-items:center;padding:7px 11px;border:2px solid var(--color-brand);border-left-width:1px;border-radius:0 var(--radius-inner) var(--radius-inner) 0;
+  background:var(--color-background-card);font-weight:var(--font-weight-semibold)}
+.klamp .kcap{flex-basis:100%;margin-top:6px;font-size:var(--font-size-xs);color:var(--color-brand);letter-spacing:.04em}
+/* 格标注 */
+.kasus{display:flex;flex-wrap:wrap;gap:var(--spacing-2);margin-top:9px}
+.kasus span{display:inline-flex;align-items:center;gap:6px;background:var(--color-background-muted);
+  border-radius:var(--radius-full);padding:5px 11px;font-size:var(--font-size-sm)}
+.kasus em{font-style:normal;font-weight:var(--font-weight-semibold)}
+.kasus i{font-style:normal;color:var(--color-text-secondary);font-size:var(--font-size-xs)}
+/* 完整译文 */
+.tr-final{
+  margin-top:11px;padding:11px 13px;background:var(--color-background-card);
+  border:var(--border-width) solid var(--color-border-emphasized);border-radius:var(--radius-element);
+  font-size:var(--font-size-lg);line-height:1.6;font-weight:var(--font-weight-medium);
+}
+.tr-final .fw.x{text-decoration:none}
+.tr-tip{
+  margin-top:10px;padding:10px 13px;border-radius:var(--radius-element);
+  background:var(--color-warning-muted);color:var(--color-text-yellow);font-size:var(--font-size-sm);line-height:1.7;
+}
+.tr-tip::before{content:"💡 "}
 </style>
 </head>
 <body>
@@ -1059,6 +1115,36 @@ function renderMe() {
   $('reset').onclick = () => { if (confirm('确定清空所有学习进度？')) { S.prog = {}; save(); render(); toast('已清空'); } };
 }
 
+/* ===================== 例句拆解渲染 ===================== */
+const KLA_TXT = { modal: '情态动词', trennbar: '可分动词', perfekt: 'Perfekt' };
+function satzHTML(t) {
+  const step = n => `<div class="tr-step">${n}</div>`;
+  let h = `<div class="tr">`;
+  h += `<div class="tr-hd">例句拆解<span class="pat">${esc(t.pat)}</span></div>`;
+  h += step('① 顺着读 · 德→中');
+  h += `<div class="flow">` + t.flow.map(([de, zh, r]) =>
+    `<div class="fl"><span class="fe">${esc(de)}</span><span class="fz ${r || 'x'}">${esc(zh)}</span></div>`).join('') + `</div>`;
+  let n = 2;
+  if (t.klammer) {
+    const [pre, left, mid, right, type] = t.klammer;
+    h += step(`${n++} Satzklammer 句框 · ${KLA_TXT[type] || type}`);
+    h += `<div class="klamp"><span class="pre">${esc(pre)}</span><span class="mid">${esc(left)}</span>
+      <span class="mid">${esc(mid)}</span><span class="right">${esc(right)}</span>
+      <span class="kcap">变位动词「${esc(left)}」占第二位，动词第二部分「${esc(right)}」被挤到句末——中间夹住的就是句框。</span></div>`;
+  }
+  if (t.kasus) {
+    h += step(`${n++} 格标注`);
+    h += `<div class="kasus">` + t.kasus.map(([de, k]) =>
+      `<span><em>${esc(de)}</em><i>${esc(k)}</i></span>`).join('') + `</div>`;
+  }
+  h += step(`${n++} 完整译文`);
+  h += `<div class="tr-final">` + (t.final
+    ? t.final.map(([z, r]) => `<span class="fw ${r || 'x'}">${esc(z)}</span>`).join('')
+    : esc(t.zh)) + `</div>`;
+  h += `<div class="tr-tip">${esc(t.tip)}</div></div>`;
+  return h;
+}
+
 /* ===================== 卡片学习 ===================== */
 let Q = [], qi = 0, flipped = false, qName = '', requeued = new Set();
 function startStudy(list, name) {
@@ -1108,6 +1194,7 @@ function drawCard(speak) {
           <button class="btn tiny" data-say="${esc(x)}">${IC.spk} 朗读</button>
           <button class="btn tiny" data-say="${esc(x)}" data-slow="1">${IC.slow} 慢读</button>
         </div>
+        ${DATA.satz[x] ? satzHTML(DATA.satz[x]) : ''}
       </div>`).join('') : '<div class="ex"><div class="cn">官方词表未给例句</div></div>'}
       ${(w.derived || []).length ? `<div class="sec-t" style="margin-bottom:8px">同词族</div>
         <div class="card rowgrp">${w.derived.map(d => `<div class="row" data-w="${esc(d.w)}">
