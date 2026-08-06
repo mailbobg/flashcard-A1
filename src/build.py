@@ -12,7 +12,7 @@
 """
 import json, os, re, sys
 
-BASE = 'https://flash.imyway.cn/'      # 换域名只改这一行（末尾保留斜杠）
+BASE = 'https://a1.imyway.cn/'      # 换域名只改这一行（末尾保留斜杠）
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
