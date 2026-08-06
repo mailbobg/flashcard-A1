@@ -164,8 +164,21 @@ def parse(pdf):
         if indent >= 10:                          # 例句续行或追加例句
             if cur is None:
                 continue
-            if cur['ex'] and body and body[0].islower():
-                cur['ex'][-1] += ' ' + body       # 续行：接到上一句尾部
+            if cur['ex'] and body:
+                last = cur['ex'][-1].strip()
+                # 折行续行 vs 独立追加例句，三个信号合起来判断：
+                #  1. 上一句已以句尾标点收尾 → 下面一定是新例句；
+                #  2. 首字母小写（und liege im Bett.）→ 一定是续行；
+                #  3. 首字母大写但只是短名词片段（Züge. / Rhein. / Empfänger.）→ 续行；
+                #     （旧逻辑只认小写，Züge. 这类大写名词被当独立例句挂错词条）
+                #  4. 大写且成句（Am Montag ist Feiertag.）→ 独立例句，
+                #     不能因为上句 z. B. Feierabend, Feiertag 没句号就误合并。
+                cont = (not re.search(r'[.!?…]["”»)\s]*$', last)
+                        and (body[0].islower() or len(body.split()) <= 2))
+                if cont:
+                    cur['ex'][-1] += ' ' + body
+                else:
+                    cur['ex'].append(body)        # 完整句 → 追加例句
             elif body:
                 cur['ex'].append(body)            # 追加例句
             continue

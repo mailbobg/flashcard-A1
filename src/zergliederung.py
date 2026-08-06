@@ -2161,14 +2161,14 @@ SATZ = {
     "final": [["我", "s"], ["喜欢", "a"], ["读报纸", "v"], ["。", "x"]],
     "tip": "Zeitung lesen = 读报（不加冠词）。",
 },
-"Ich schreibe meinen Bekannten eine Karte aus dem": {
-    "zh": "我给熟人寄一张明信片（从……）。",
+"Ich schreibe meinen Bekannten eine Karte aus dem Urlaub.": {
+    "zh": "我从度假地给熟人寄一张明信片。",
     "pat": "普通语序 · 双宾语",
-    "flow": [["Ich", "我", "s"], ["schreibe", "写", "v"], ["meinen Bekannten", "给熟人", "o"],
-             ["eine Karte", "一张明信片", "o"], ["aus dem", "从……", "a"]],
+    "flow": [["Ich", "我", "s"], ["schreibe", "写/寄", "v"], ["meinen Bekannten", "给熟人", "o"],
+             ["eine Karte", "一张明信片", "o"], ["aus dem Urlaub", "从度假地", "a"]],
     "kasus": [["Ich", "Nominativ"], ["meinen Bekannten", "Dativ"], ["eine Karte", "Akkusativ"]],
-    "final": [["我", "s"], ["给熟人", "o"], ["寄", "v"], ["一张明信片", "o"], ["。", "x"]],
-    "tip": "schreiben + Dativ(给谁) + Akkusativ(写什么)。此句在词表中被截断。",
+    "final": [["我", "s"], ["从度假地", "a"], ["给熟人", "o"], ["寄", "v"], ["一张明信片", "o"], ["。", "x"]],
+    "tip": "schreiben + Dativ(给谁) + Akkusativ(写什么)。aus dem Urlaub = 从度假地寄出。",
 },
 # ============================================================
 # 十五、Am besten / Darf ich / Der Bus / Herr Müller / Ich fahre / Ich heiße / Mein Mann / Sie müssen
@@ -2681,14 +2681,14 @@ SATZ = {
     "final": [["年龄", "x"], ["：", "x"], ["26 岁", "x"], ["。", "x"]],
     "tip": "填表场景：Alter = 年龄。",
 },
-"Am Kiosk bekommen Sie Getränke, Zigaretten und": {
-    "zh": "在售货亭您可以买到饮料、香烟和……",
+"Am Kiosk bekommen Sie Getränke, Zigaretten und Zeitungen.": {
+    "zh": "在售货亭您可以买到饮料、香烟和报纸。",
     "pat": "处所前置",
     "flow": [["Am Kiosk", "在售货亭", "a"], ["bekommen Sie", "您买到", "v"],
-             ["Getränke, Zigaretten und", "饮料、香烟和……", "o"]],
+             ["Getränke, Zigaretten und Zeitungen", "饮料、香烟和报纸", "o"]],
     "kasus": [["Getränke, Zigaretten", "Akkusativ"]],
-    "final": [["在售货亭", "a"], ["您可以买到", "v"], ["饮料、香烟和……", "o"], ["。", "x"]],
-    "tip": "der Kiosk = 售货亭。此句在词表中被截断。",
+    "final": [["在售货亭", "a"], ["您可以买到", "v"], ["饮料、香烟和报纸", "o"], ["。", "x"]],
+    "tip": "der Kiosk = 售货亭。",
 },
 "Am Montag ist Feiertag.": {
     "zh": "星期一是节假日。",
@@ -2764,14 +2764,14 @@ SATZ = {
     "final": [["再见", "x"], ["。", "x"]],
     "tip": "正式告别（句号版）。",
 },
-"Auf dem Brief steht dein Name, also bist du der": {
-    "zh": "信上写着你的名字，所以你就是那位……",
+"Auf dem Brief steht dein Name, also bist du der Empfänger.": {
+    "zh": "信上写着你的名字，所以你就是收件人。",
     "pat": "并列句 · also",
     "flow": [["Auf dem Brief", "在信上", "a"], ["steht", "写着", "v"], ["dein Name", "你的名字", "s"],
-             ["also bist du der", "所以你就是那位", "c"]],
-    "kasus": [["dem Brief", "Dativ"], ["dein Name", "Nominativ"]],
-    "final": [["信上", "a"], ["写着你的名字", "v"], ["，", "x"], ["所以", "a"], ["你就是那位……", "c"]],
-    "tip": "stehen 此处 = 写着。also = 所以。此句被截断。",
+             ["also bist du der Empfänger", "所以你就是收件人", "c"]],
+    "kasus": [["dem Brief", "Dativ"], ["dein Name", "Nominativ"], ["der Empfänger", "Nominativ"]],
+    "final": [["信上", "a"], ["写着你的名字", "v"], ["，", "x"], ["所以", "a"], ["你就是收件人", "c"], ["。", "x"]],
+    "tip": "stehen 此处 = 写着。also = 所以。der Empfänger = 收件人。",
 },
 "Auf dem Formular müssen Sie an mehreren Stellen etwas ankreuzen.": {
     "zh": "您必须在表格的好几处打勾。",
@@ -2783,14 +2783,14 @@ SATZ = {
     "final": [["您", "s"], ["必须在表格的好几处", "a"], ["打勾", "v2"], ["。", "x"]],
     "tip": "ankreuzen 可分（打勾）。an + Dativ（位置）。",
 },
-"Auf diesem Plan steht nur die Ankunft(-szeit) der": {
-    "zh": "这张时刻表上只写着……的到达时间。",
+"Auf diesem Plan steht nur die Ankunft(-szeit) der Züge.": {
+    "zh": "这张时刻表上只写着各趟火车的到达时间。",
     "pat": "处所前置",
     "flow": [["Auf diesem Plan", "在这张表上", "a"], ["steht", "写着", "v"], ["nur", "只", "a"],
-             ["die Ankunft(-szeit) der", "……的到达时间", "s"]],
+             ["die Ankunft(-szeit) der Züge", "各趟火车的到达时间", "s"]],
     "kasus": [["diesem Plan", "Dativ"], ["die Ankunft(-szeit)", "Nominativ"]],
-    "final": [["这张表上", "a"], ["只写着", "v"], ["……的到达时间", "s"]],
-    "tip": "der Plan = 时刻表/平面图。die Ankunft = 到达。此句被截断。",
+    "final": [["这张表上", "a"], ["只写着", "v"], ["各趟火车的到达时间", "s"], ["。", "x"]],
+    "tip": "der Plan = 时刻表/平面图。die Ankunft = 到达（der Zug 复数 die Züge）。",
 },
 "Auf welchem Bahnsteig fährt der Zug?": {
     "zh": "火车从哪个站台出发？",
@@ -3474,13 +3474,6 @@ SATZ = {
     "final": [["德语", "s"], ["不", "a"], ["容易", "v"], ["。", "x"]],
     "tip": "leicht = 容易。",
 },
-"Deutsch.": {
-    "zh": "德语。",
-    "pat": "单词应答",
-    "flow": [["Deutsch", "德语", "x"]],
-    "final": [["德语", "x"]],
-    "tip": "回答「你学什么语言」的省略句。",
-},
 "Die Aufzüge bitte nicht benutzen!": {
     "zh": "请不要使用电梯！",
     "pat": "祈使句 · 否定",
@@ -4096,13 +4089,6 @@ SATZ = {
     "final": [["埃尔特维勒", "s"], ["是", "v"], ["莱茵河畔的", "d"], ["一座小城", "x"], ["。", "x"]],
     "tip": "am Rhein = an + dem（河畔，作定语）。",
 },
-"Empfänger.": {
-    "zh": "收件人。",
-    "pat": "表单片段",
-    "flow": [["Empfänger", "收件人", "x"]],
-    "final": [["收件人", "x"], ["。", "x"]],
-    "tip": "信封/表单字段：der Empfänger = 收件人。",
-},
 "Entschuldigen Sie bitte!": {
     "zh": "对不起/打扰一下！",
     "pat": "祈使句",
@@ -4389,14 +4375,14 @@ SATZ = {
     "final": [["以前", "a"], ["我们", "s"], ["常", "a"], ["一起", "a"], ["去看电影", "v"], ["。", "x"]],
     "tip": "früher = 以前。waren 是 sein 的过去时。",
 },
-"Fährst du auch nach München? – Nein, ich habe keine": {
-    "zh": "你也去慕尼黑吗？——不，我没有……",
+"Fährst du auch nach München? – Nein, ich habe keine Zeit.": {
+    "zh": "你也去慕尼黑吗？——不，我没有时间。",
     "pat": "对话片段 · 方向",
     "flow": [["Fährst du", "你去", "v"], ["auch", "也", "a"], ["nach München", "去慕尼黑", "a"],
-             ["Nein, ich habe keine", "不，我没有……", "x"]],
+             ["Nein, ich habe keine Zeit", "不，我没有时间", "x"]],
     "kasus": [["du", "Nominativ"]],
-    "final": [["你", "s"], ["也去", "v"], ["慕尼黑", "a"], ["吗？", "x"], ["不", "x"], ["，", "x"], ["我没有……", "x"]],
-    "tip": "nach + 城市（方向）。此句被截断。",
+    "final": [["你", "s"], ["也去", "v"], ["慕尼黑", "a"], ["吗？", "x"], ["不", "x"], ["，", "x"], ["我没有时间", "x"]],
+    "tip": "nach + 城市（方向）。keine Zeit = 没有时间。",
 },
 "Fährst du mit dem Fahrrad oder mit dem Auto?": {
     "zh": "你骑自行车还是开车？",
@@ -4977,14 +4963,14 @@ SATZ = {
     "final": [["我", "s"], ["每天", "a"], ["游", "v"], ["一公里", "o"], ["。", "x"]],
     "tip": "jeden Tag = 每天。",
 },
-"Ich spreche Englisch, Französisch und ein bisschen": {
-    "zh": "我会说英语、法语和一点……",
+"Ich spreche Englisch, Französisch und ein bisschen Deutsch.": {
+    "zh": "我会说英语、法语和一点德语。",
     "pat": "普通语序 · 宾语",
     "flow": [["Ich", "我", "s"], ["spreche", "会说", "v"], ["Englisch, Französisch", "英语、法语", "o"],
-             ["und ein bisschen", "和一点……", "o"]],
+             ["und ein bisschen Deutsch", "和一点德语", "o"]],
     "kasus": [["Ich", "Nominativ"], ["Englisch, Französisch", "Akkusativ"]],
-    "final": [["我", "s"], ["会说", "v"], ["英语、法语和一点……", "o"]],
-    "tip": "ein bisschen = 一点点。此句被截断。",
+    "final": [["我", "s"], ["会说", "v"], ["英语、法语", "o"], ["和一点德语", "o"], ["。", "x"]],
+    "tip": "ein bisschen = 一点点。",
 },
 "Ich studiere in Mainz.": {
     "zh": "我在美因茨读大学。",
@@ -5143,14 +5129,14 @@ SATZ = {
     "final": [["这本词典里", "a"], ["您", "s"], ["可以找到", "v"], ["两万多个词", "o"], ["。", "x"]],
     "tip": "mehr als = 超过。das Wörterbuch = 词典。",
 },
-"In meinem Kurs sind acht Schülerinnen und fünf": {
-    "zh": "我的班里有八名女生和五名……",
+"In meinem Kurs sind acht Schülerinnen und fünf Schüler.": {
+    "zh": "我的班里有八名女生和五名男生。",
     "pat": "处所前置",
     "flow": [["In meinem Kurs", "在我的班里", "a"], ["sind", "有", "v"],
-             ["acht Schülerinnen und fünf", "八名女生和五名……", "s"]],
-    "kasus": [["meinem Kurs", "Dativ"], ["acht Schülerinnen und fünf", "Nominativ"]],
-    "final": [["我的班里", "a"], ["有", "v"], ["八名女生和五名……", "s"]],
-    "tip": "die Schülerin = 女生。此句被截断。",
+             ["acht Schülerinnen und fünf Schüler", "八名女生和五名男生", "s"]],
+    "kasus": [["meinem Kurs", "Dativ"], ["acht Schülerinnen und fünf Schüler", "Nominativ"]],
+    "final": [["我的班里", "a"], ["有", "v"], ["八名女生和五名男生", "s"], ["。", "x"]],
+    "tip": "die Schülerin = 女生，der Schüler = 男生。",
 },
 "In meiner Freizeit spiele ich oft Fußball.": {
     "zh": "空闲时我经常踢足球。",
@@ -5298,14 +5284,14 @@ SATZ = {
     "final": [["现在我", "s"], ["不得不走了", "v"], ["，", "x"], ["抱歉", "x"]],
     "tip": "(aber) leider = 可惜/抱歉。结束对话常用。",
 },
-"Junge Leute sagen meistens „tschüss!“ und nicht": {
-    "zh": "年轻人通常说「再见」而不是……",
+"Junge Leute sagen meistens „tschüss!“ und nicht „auf Wiedersehen“.": {
+    "zh": "年轻人通常说「再见」而不是「再见（正式）」。",
     "pat": "普通语序 · 宾语",
     "flow": [["Junge Leute", "年轻人", "s"], ["sagen", "说", "v"], ["meistens", "通常", "a"],
-             ["„tschüss!“ und nicht", "「再见」而不是……", "o"]],
+             ["„tschüss!“ und nicht „auf Wiedersehen“", "「再见」而不是「再见（正式）」", "o"]],
     "kasus": [["Junge Leute", "Nominativ"]],
-    "final": [["年轻人", "s"], ["通常说", "v"], ["「再见」而不是……", "o"]],
-    "tip": "tschüss = 再见（口语）。此句被截断。",
+    "final": [["年轻人", "s"], ["通常说", "v"], ["「再见」", "o"], ["而不是", "x"], ["「再见（正式）」", "o"]],
+    "tip": "tschüss = 再见（口语），auf Wiedersehen = 再见（正式）。",
 },
 "Kann ich (mit) Herrn Klein sprechen?": {
     "zh": "我能和克莱因先生通话吗？",
@@ -5353,13 +5339,6 @@ SATZ = {
     "kasus": [["Sie", "Nominativ"], ["diese Frau", "Akkusativ"]],
     "final": [["您", "s"], ["认识", "v"], ["这位女士", "o"], ["吗？", "x"], ["不", "x"], ["，", "x"], ["可惜不认识", "x"]],
     "tip": "kennen + Akkusativ。",
-},
-"Kilometer.": {
-    "zh": "公里。",
-    "pat": "单词片段",
-    "flow": [["Kilometer", "公里", "x"]],
-    "final": [["公里", "x"]],
-    "tip": "词表片段：der Kilometer = 公里。",
 },
 "Komm, wir fahren zum Starnberger See.": {
     "zh": "来，我们开车去施塔恩贝格湖。",
@@ -5972,13 +5951,6 @@ SATZ = {
     "final": [["这里", "a"], ["禁止", "v"], ["吸烟", "x"], ["。", "x"]],
     "tip": "erlaubt = 允许。nicht erlaubt = 禁止。",
 },
-"Rhein.": {
-    "zh": "莱茵河。",
-    "pat": "单词片段",
-    "flow": [["Rhein", "莱茵河", "x"]],
-    "final": [["莱茵河", "x"]],
-    "tip": "词表片段：der Rhein = 莱茵河。",
-},
 "Ricardo hat kurzes Haar.": {
     "zh": "里卡多留短发。",
     "pat": "haben + Akkusativ",
@@ -6061,13 +6033,6 @@ SATZ = {
     "flow": [["Schönen Urlaub", "美好的假期", "x"]],
     "final": [["祝假期愉快", "x"], ["！", "x"]],
     "tip": "送别祝福。",
-},
-"Schüler.": {
-    "zh": "学生。",
-    "pat": "单词片段",
-    "flow": [["Schüler", "学生", "x"]],
-    "final": [["学生", "x"]],
-    "tip": "词表片段：der Schüler = 学生。",
 },
 "Sehen wir uns nächste Woche?": {
     "zh": "我们下周见吗？",
@@ -6341,13 +6306,6 @@ SATZ = {
     "final": [["您", "s"], ["喝咖啡", "v"], ["加牛奶", "a"], ["吗？", "x"]],
     "tip": "mit Milch = 加牛奶（配搭）。",
 },
-"Trinken“.": {
-    "zh": "„喝“。",
-    "pat": "引用片段",
-    "flow": [["Trinken“", "„喝“", "x"]],
-    "final": [["„喝“", "x"]],
-    "tip": "词表引用片段：trinken = 喝。",
-},
 "Tut mir leid, der Platz ist besetzt.": {
     "zh": "抱歉，这个座位有人了。",
     "pat": "道歉 + 说明",
@@ -6427,13 +6385,6 @@ SATZ = {
     "final": [["我们楼下", "a"], ["住着", "v"], ["一个", "a"], ["有三个孩子的", "d"], ["家庭", "s"], ["。", "x"]],
     "tip": "unter uns = 在我们（楼层）下面。",
 },
-"Urlaub.": {
-    "zh": "假期。",
-    "pat": "单词片段",
-    "flow": [["Urlaub", "假期", "x"]],
-    "final": [["假期", "x"]],
-    "tip": "词表片段：der Urlaub = 假期。",
-},
 "Viel Glück!": {
     "zh": "祝你好运！",
     "pat": "固定短语",
@@ -6491,22 +6442,22 @@ SATZ = {
     "final": [["12 点到 12 点半", "a"], ["我们", "s"], ["午休", "v"], ["。", "x"]],
     "tip": "die Mittagspause = 午休。von … bis = 从……到。",
 },
-"Von Mainz nach Frankfurt sind es circa fünfzig": {
-    "zh": "从美因茨到法兰克福大约五十……",
-    "pat": "距离片段",
+"Von Mainz nach Frankfurt sind es circa fünfzig Kilometer.": {
+    "zh": "从美因茨到法兰克福大约五十公里。",
+    "pat": "距离表达",
     "flow": [["Von Mainz nach Frankfurt", "从美因茨到法兰克福", "a"], ["sind es", "有", "v"],
-             ["circa fünfzig", "大约五十……", "s"]],
-    "final": [["从美因茨到法兰克福", "a"], ["大约", "a"], ["五十……", "s"]],
-    "tip": "von … nach = 从……到。circa = 大约。此句被截断。",
+             ["circa fünfzig Kilometer", "大约五十公里", "s"]],
+    "final": [["从美因茨到法兰克福", "a"], ["大约", "a"], ["五十公里", "s"], ["。", "x"]],
+    "tip": "von … nach = 从……到。circa = 大约。",
 },
-"Von diesem Hotel hat man einen guten Blick auf den": {
-    "zh": "从这个酒店可以很好地眺望……",
+"Von diesem Hotel hat man einen guten Blick auf den Rhein.": {
+    "zh": "从这个酒店可以很好地眺望莱茵河。",
     "pat": "处所前置 · 无人称",
     "flow": [["Von diesem Hotel", "从这个酒店", "a"], ["hat man", "人们有", "v"],
-             ["einen guten Blick auf den", "很好地眺望……", "o"]],
+             ["einen guten Blick auf den Rhein", "很好地眺望莱茵河", "o"]],
     "kasus": [["diesem Hotel", "Dativ"], ["einen guten Blick", "Akkusativ"]],
-    "final": [["从这个酒店", "a"], ["可以", "v"], ["很好地眺望……", "o"]],
-    "tip": "einen Blick auf + Akk = 眺望……。此句被截断。",
+    "final": [["从这个酒店", "a"], ["可以", "v"], ["很好地眺望", "o"], ["莱茵河", "o"], ["。", "x"]],
+    "tip": "einen Blick auf + Akk = 眺望……。der Rhein = 莱茵河。",
 },
 "Vor der Abfahrt rufe ich an.": {
     "zh": "出发前我会打电话。",
@@ -7012,14 +6963,14 @@ SATZ = {
     "final": [["我们正在谈保罗", "c"], ["，", "x"], ["他正好来了", "c"], ["。", "x"]],
     "tip": "sprechen über + Akk = 谈论。",
 },
-"Wir sprechen heute über das Thema „Essen und": {
-    "zh": "我们今天谈「饮食」这个主题……",
+"Wir sprechen heute über das Thema „Essen und Trinken“.": {
+    "zh": "我们今天谈「饮食」这个主题。",
     "pat": "普通语序 · über",
     "flow": [["Wir", "我们", "s"], ["sprechen", "谈", "v"], ["heute", "今天", "a"],
-             ["über das Thema „Essen und", "「饮食」这个主题……", "o"]],
+             ["über das Thema „Essen und Trinken“", "「饮食」这个主题", "o"]],
     "kasus": [["Wir", "Nominativ"]],
-    "final": [["我们今天谈", "v"], ["「饮食」这个主题……", "o"]],
-    "tip": "das Thema = 主题。此句被截断。",
+    "final": [["我们今天谈", "v"], ["「饮食」这个主题", "o"], ["。", "x"]],
+    "tip": "das Thema = 主题。",
 },
 "Wir wandern um den Chiemsee.": {
     "zh": "我们绕着基姆湖徒步。",
@@ -7193,20 +7144,6 @@ SATZ = {
     "final": [["请", "x"], ["结账", "o"], ["！", "x"]],
     "tip": "点单结账用语。",
 },
-"Zeit.": {
-    "zh": "时间。",
-    "pat": "单词片段",
-    "flow": [["Zeit", "时间", "x"]],
-    "final": [["时间", "x"]],
-    "tip": "词表片段：die Zeit = 时间。",
-},
-"Zeitungen.": {
-    "zh": "报纸。",
-    "pat": "单词片段",
-    "flow": [["Zeitungen", "报纸", "x"]],
-    "final": [["报纸", "x"]],
-    "tip": "词表片段：die Zeitung 复数。",
-},
 "Zieh die Schuhe aus!": {
     "zh": "把鞋脱了！",
     "pat": "可分动词 · 祈使句",
@@ -7286,13 +7223,6 @@ SATZ = {
     "final": [["8 点到 10 点之间", "a"], ["我", "s"], ["在家", "v"], ["。", "x"]],
     "tip": "zwischen … und … = 在……之间。",
 },
-"Züge.": {
-    "zh": "火车。",
-    "pat": "单词片段",
-    "flow": [["Züge", "火车", "x"]],
-    "final": [["火车", "x"]],
-    "tip": "词表片段：der Zug 复数。",
-},
 "den Anrufbeantworter.": {
     "zh": "答录机。",
     "pat": "单词片段",
@@ -7341,12 +7271,5 @@ SATZ = {
     "kasus": [["ich", "Nominativ"]],
     "final": [["不", "x"], ["，", "x"], ["我要另一个", "v"]],
     "tip": "die andere = 另一个。",
-},
-"„auf Wiedersehen“.": {
-    "zh": "„再见“。",
-    "pat": "引用片段",
-    "flow": [["„auf Wiedersehen“", "„再见“", "x"]],
-    "final": [["„再见“", "x"]],
-    "tip": "词表引用：auf Wiedersehen = 再见。",
 },
 }
