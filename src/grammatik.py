@@ -4,12 +4,28 @@
 原先应用里只有背单词和五个测验，没有一句讲解——让没学过的人去做
 einundzwanzig 的听写题，那不是练习是猜谜。这份文件补的就是讲解。
 
-排序按「不会就寸步难行」，不按语法书的章节顺序：
-    1 数字   —— 听力口语每场必考，且规则反直觉（倒读）
-    2 性别   —— 中文没有语法性，这是最大的认知门槛，且每个名词都受影响
-    3 变位   —— 不会变位一个句子也说不出来
-    4 语序   —— 德语靠「动词第二位 + 动词框」组织句子，和中文完全不同
-    5 格     —— 官方考纲 A1 明确要考 Nominativ / Akkusativ / Dativ
+覆盖范围以官方《Prüfungsziele》第 101–106 页的语法清单为准，40 个条目
+逐条对应，对照表见 src/check_lehrplan.py（跑一下能验证有没有漏）。
+
+前五课按「不会就寸步难行」排序，不按语法书章节；后八课按考纲补齐：
+    1 数字     听力口语每场必考，规则反直觉（倒读）
+    2 性别     中文没有语法性，最大的认知门槛
+    3 变位     不会变位一个句子也说不出来
+    4 语序     动词第二位 + 动词框，和中文组织方式完全不同
+    5 格       考纲明确要考 Nominativ / Akkusativ / Dativ
+    6 情态动词  考纲逐个列了六个的例句，听力里满是
+    7 完成时    德语讲过去几乎全用它；考纲点名只考 15 个动词
+    8 冠词与否定 ein/kein/mein/dieser 变化方式相同，一起学最省力
+    9 代词     mir/dir/ihn 听不出角色，整段听力就白听
+   10 介词     考纲篇幅最大的一块，三张表
+   11 形容词    表语与副词不变形；attributiv 词尾只要求看得懂
+   12 命令式    试卷指令语本身就是命令式，看不懂就答不了题
+   13 连句构词  连词决定语序；长复合词从后往前拆
+
+一条重要的取向，来自考纲第 100 页的说明：语法清单主要面向**接受性技能**
+（听力、阅读），对口语写作产出「处于次要地位」，且 A1 阶段「可理解性的
+重要性高于形式正确性」。所以讲解偏向「听到/看到这个形式意味着什么」，
+而不是纠结产出时的词尾。
 
 每课由若干块组成，块的写法：
     ('t',   正文)                       讲解段落，可用 <b> 强调
@@ -308,6 +324,439 @@ LEKTIONEN = [
         ('w', '人称代词也跟着变格，这几个最常用，直接背下来：<br>'
               'ich → mich（四）/ mir（三）　·　du → dich / dir　·　'
               'er → ihn / ihm　·　sie → sie / ihr　·　Sie → Sie / Ihnen'),
+    ],
+},
+
+# ============ 6. 情态动词 ============
+{
+    'id': 'modal', 'no': 6,
+    'title': '情态动词',
+    'sub': '能 / 想 / 必须 / 可以 / 应该',
+    'why': '官方考纲把六个情态动词逐个列了例句。它们几乎出现在每一段听力里，'
+           '而且会把句子撑成「动词框」——不认得就抓不住句尾那个关键动词。',
+    'blocks': [
+        ('t', '六个：<b>können</b>（能、会）· <b>wollen</b>（想要）· <b>müssen</b>（必须）· '
+              '<b>dürfen</b>（可以、被允许）· <b>sollen</b>（应该）· <b>möchten</b>（想要，客气）。'),
+        ('r', '变位有个共同特点：ich 和 er 长得一样，都不带词尾',
+              '这和普通动词很不一样（普通动词 er 要加 -t）。'),
+        ('tab', ['人称', 'können', 'müssen', 'dürfen'], [
+            ['ich',           '*ich kann',   '*ich muss',   '*ich darf'],
+            ['du',            '*du kannst',  '*du musst',   '*du darfst'],
+            ['er / sie / es', '*er kann',    '*er muss',    '*er darf'],
+            ['wir / sie / Sie', '*wir können', '*wir müssen', '*wir dürfen'],
+            ['ihr',           '*ihr könnt',  '*ihr müsst',  '*ihr dürft'],
+        ]),
+        ('tab', ['人称', 'wollen', 'sollen', 'möchten'], [
+            ['ich',           '*ich will',   '*ich soll',    '*ich möchte'],
+            ['du',            '*du willst',  '*du sollst',   '*du möchtest'],
+            ['er / sie / es', '*er will',    '*er soll',     '*er möchte'],
+            ['wir / sie / Sie', '*wir wollen', '*wir sollen', '*wir möchten'],
+            ['ihr',           '*ihr wollt',  '*ihr sollt',   '*ihr möchtet'],
+        ]),
+
+        ('r', '句子被撑成动词框', '情态动词变位后放第二位，<b>真正的动词用原形放到句尾</b>。'),
+        ('bsp', [
+            ('Ich kann gut Deutsch sprechen.', '我德语说得不错。'),
+            ('Du musst zuerst die Hausaufgaben machen.', '你得先把作业做了。'),
+            ('Sie dürfen hier nicht rauchen.', '这里禁止吸烟。'),
+            ('Was soll ich machen?', '我该怎么办？'),
+            ('Möchtest du eine Tasse Tee?', '你想来杯茶吗？'),
+            ('Er will eine Ausbildung machen.', '他想去接受职业培训。'),
+        ]),
+        ('w', '否定形式差别很大，考试爱考：<br>'
+              '<b>nicht dürfen</b> = 禁止（Sie dürfen hier nicht rauchen. 不许抽烟）<br>'
+              '<b>nicht müssen</b> = 不必（Du musst nicht kommen. 你不用来，但可以来）<br>'
+              '按中文直觉这两个容易译反。'),
+        ('r', 'möchten 比 wollen 客气', '点餐、购物、提要求一律用 möchten。'
+              'wollen 语气偏硬，说自己的打算时才用。'),
+        ('t', '还有一个 <b>würde</b>，考纲里也列了，当固定说法记就行：'
+              '<b>Ich würde gerne …</b>（我很想…），比 möchten 更客气。'),
+        ('bsp', [
+            ('Ich möchte einen Kaffee, bitte.', '我要一杯咖啡，谢谢。'),
+            ('Ich würde gerne ins Kino gehen.', '我很想去看电影。'),
+            ('Können Sie mir bitte helfen?', '您能帮我一下吗？'),
+        ]),
+        ('drill', 'satz', '去练：把词块排成句子'),
+    ],
+},
+
+# ============ 7. 完成时 ============
+{
+    'id': 'perfekt', 'no': 7,
+    'title': '完成时 Perfekt',
+    'sub': '德语讲过去的事，用的是这个',
+    'why': '德语口语说过去的事几乎全用完成时，不用过去式。'
+           '好消息是官方考纲<b>点名了只考 15 个动词</b>的完成时，范围小得惊人。',
+    'blocks': [
+        ('r', '构成：haben / sein 放第二位，第二分词放句尾',
+              '又是一个动词框。<b>Ich habe gestern Deutsch gelernt.</b>'),
+        ('t', '第二分词怎么变，看动词属于哪一类：'),
+        ('tab', ['类型', '怎么变', '例子'], [
+            ['规则动词', 'ge + 词干 + t', '*machen → gemacht'],
+            ['不规则动词', 'ge + 词干 + en（常换元音）', '*trinken → getrunken'],
+            ['-ieren 结尾', '不加 ge-', '*passieren → passiert'],
+            ['不可分前缀', '不加 ge-', '*verstehen → verstanden'],
+            ['可分动词', 'ge 夹在前缀和词干之间', '*einkaufen → eingekauft'],
+        ]),
+        ('w', '判断加不加 <b>ge-</b>，靠的还是重音：重音在第一个音节的加 ge-，'
+              '重音不在第一个音节的（ver<b>STE</b>hen、pas<b>SIE</b>ren）不加。'
+              '这条和发音关里的可分动词判断法是同一条。'),
+
+        ('r', '用 haben 还是 sein', '绝大多数用 <b>haben</b>。'
+              '只有「位置移动」和「状态改变」用 <b>sein</b>——A1 范围内主要是 '
+              'fahren / gehen / kommen / passieren，外加一个特例 bleiben。'),
+        ('t', '下面这 15 个就是考纲点名要考的全部，直接背这张表：'),
+        ('tab', ['原形', '完成时', '意思'], [
+            ['arbeiten',  '*hat gearbeitet',  '工作'],
+            ['bleiben',   '*ist geblieben',   '留下'],
+            ['essen',     '*hat gegessen',    '吃'],
+            ['fahren',    '*ist gefahren',    '乘车去'],
+            ['fragen',    '*hat gefragt',     '问'],
+            ['glauben',   '*hat geglaubt',    '相信'],
+            ['haben',     '*hat gehabt',      '有'],
+            ['lesen',     '*hat gelesen',     '读'],
+            ['lernen',    '*hat gelernt',     '学'],
+            ['machen',    '*hat gemacht',     '做'],
+            ['passieren', '*ist passiert',    '发生'],
+            ['schlafen',  '*hat geschlafen',  '睡'],
+            ['sehen',     '*hat gesehen',     '看见'],
+            ['trinken',   '*hat getrunken',   '喝'],
+            ['verstehen', '*hat verstanden',  '理解'],
+        ]),
+        ('bsp', [
+            ('Ich habe gestern viel gearbeitet.', '我昨天工作了很久。'),
+            ('Wir sind mit dem Zug gefahren.', '我们坐火车去的。'),
+            ('Hast du schon gegessen?', '你吃过了吗？'),
+            ('Was ist passiert?', '出什么事了？'),
+            ('Ich habe dich nicht verstanden.', '我没听懂你说的。'),
+        ]),
+
+        ('r', '分词也能当形容词用', '店铺告示上最常见，阅读题必考。'),
+        ('bsp', [
+            ('Heute geöffnet.', '今日营业。'),
+            ('Bis Donnerstag geschlossen.', '休息至周四。'),
+        ]),
+        ('r', '过去式只需要两个词', '考纲只要求 haben 和 sein 的第一、三人称过去式。'
+              '其余动词讲过去一律用完成时。'),
+        ('bsp', [
+            ('Ich hatte keine Zeit.', '我当时没时间。'),
+            ('Er war nicht da.', '他当时不在。'),
+        ]),
+    ],
+},
+
+# ============ 8. 冠词与否定 ============
+{
+    'id': 'artikel', 'no': 8,
+    'title': '冠词全家与否定',
+    'sub': 'ein / kein / mein / dieser · nicht 还是 kein',
+    'why': '这几个词形状几乎一样，变化方式也一样——一起学最省力。'
+           '而 nicht 和 kein 的分工是中文母语者最容易错的地方：中文只有一个「不」。',
+    'blocks': [
+        ('r', '不定冠词 ein：只有阳性四格会变', '和定冠词一样，四格的变化只发生在阳性上。'),
+        ('tab', ['', '阳性', '阴性', '中性', '复数'], [
+            ['主格', 'ein', 'eine', 'ein', '—'],
+            ['四格', 'einen', 'eine', 'ein', '—'],
+            ['三格', 'einem', 'einer', 'einem', '—'],
+        ]),
+        ('t', '不定冠词<b>没有复数</b>。要说「一些书」，直接不用冠词：<b>Bücher</b>。'
+              '这叫零冠词，物质名词和职业也用它。'),
+        ('bsp', [
+            ('Ich esse gern Fleisch.', '我爱吃肉。（物质名词，不加冠词）'),
+            ('Ich bin Lehrer.', '我是老师。（说职业不加冠词）'),
+        ]),
+
+        ('r', 'mein / dein / kein 全都跟着 ein 变',
+              '记住 ein 的变化，这一整家就都会了——词尾完全一样。'),
+        ('tab', ['词', '意思', '例子'], [
+            ['mein',  '我的',   '*Mein Vater ist Arzt.'],
+            ['dein',  '你的',   '*Ist das dein Auto?'],
+            ['sein',  '他的',   '*Das ist seine Frau.'],
+            ['ihr',   '她的/他们的', '*Ihre Adresse, bitte?'],
+            ['Ihr',   '您的（大写）', '*Wie ist Ihr Name?'],
+            ['unser', '我们的', '*Das ist unsere Lehrerin.'],
+            ['euer',  '你们的', '*Euer Kurs beginnt heute.'],
+            ['kein',  '一个也没有', '*Ich habe keine Zeit.'],
+        ]),
+        ('t', '另外还有 <b>dieser / diese / dieses</b>（这个），跟着<b>定冠词</b>的词尾变——'
+              'der→dieser、die→diese、das→dieses。'),
+
+        ('r', 'nicht 还是 kein？看被否定的是不是名词',
+              '否定<b>带 ein 或不带冠词的名词</b> → 用 <b>kein</b>；其他一切 → 用 <b>nicht</b>。'),
+        ('tab', ['肯定', '否定', '用哪个'], [
+            ['*Ich habe Zeit.',        '*Ich habe keine Zeit.',      'kein（名词无冠词）'],
+            ['*Er ist Lehrer.',        '*Er ist kein Lehrer.',       'kein（职业无冠词）'],
+            ['*Ich verstehe dich.',    '*Ich verstehe dich nicht.',  'nicht（否定动词）'],
+            ['*Das ist der Bus.',      '*Das ist nicht der Bus.',    'nicht（有定冠词）'],
+            ['*Es ist teuer.',         '*Es ist nicht teuer.',       'nicht（否定形容词）'],
+        ]),
+        ('w', '<b>nicht 的位置</b>：否定整句时放句尾（但在动词框的另一半之前）；'
+              '否定某一个成分时紧挨在那个成分前面。<br>'
+              'Ich kann heute <b>nicht</b> kommen.（nicht 在句尾动词 kommen 之前）'),
+        ('bsp', [
+            ('Ich habe kein Geld.', '我没钱。'),
+            ('Ich komme heute nicht.', '我今天不来。'),
+            ('Das ist nicht mein Koffer.', '这不是我的箱子。'),
+        ]),
+    ],
+},
+
+# ============ 9. 代词 ============
+{
+    'id': 'pronomen', 'no': 9,
+    'title': '代词',
+    'sub': '我你他的三格四格 · 疑问代词 · man',
+    'why': '第 5 课只用一句话带过了代词变格，但考纲把它单列了一大块，'
+           '而且听力里满是 mir / dir / ihn / Ihnen——听不出是谁对谁做，整段就白听了。',
+    'blocks': [
+        ('r', '人称代词的三张形式', '横着背：ich–mich–mir。'),
+        ('tab', ['主格（谁）', '四格（对谁）', '三格（给谁）'], [
+            ['*ich',  '*mich',  '*mir'],
+            ['*du',   '*dich',  '*dir'],
+            ['*er',   '*ihn',   '*ihm'],
+            ['*sie',  '*sie',   '*ihr'],
+            ['*es',   '*es',    '*ihm'],
+            ['*wir',  '*uns',   '*uns'],
+            ['*ihr',  '*euch',  '*euch'],
+            ['*sie',  '*sie',   '*ihnen'],
+            ['*Sie',  '*Sie',   '*Ihnen'],
+        ]),
+        ('w', '<b>sie</b> 一个词有三个意思：她 / 他们 / 您（大写 Sie）。'
+              '靠动词变位区分——sie ist（她是）、sie sind（他们是）、Sie sind（您是）。'),
+
+        ('r', '这几个动词后面跟三格', '考纲点名：danken、gehören、helfen、geben，'
+              '外加一个固定说法 es geht + 三格。'),
+        ('bsp', [
+            ('Ich danke Ihnen sehr.', '非常感谢您。'),
+            ('Kann ich dir helfen?', '我能帮你吗？'),
+            ('Wem gehört die Jacke?', '这件外套是谁的？'),
+            ('Es geht mir gut.', '我很好。'),
+            ('Gib mir bitte dein Wörterbuch.', '把你的词典给我一下。'),
+        ]),
+
+        ('r', '疑问代词也分格', '问「谁」的时候要先想清楚问的是哪个角色。'),
+        ('tab', ['格', '疑问词', '例子'], [
+            ['主格', 'Wer? / Was?', '*Wer ist da?'],
+            ['四格', 'Wen? / Was?', '*Wen besuchst du?'],
+            ['三格', 'Wem?',        '*Wem gehört die Jacke?'],
+        ]),
+
+        ('r', '几个常用的不定代词', '考纲逐个列了例句，都是听力里的高频词。'),
+        ('tab', ['词', '意思', '例子'], [
+            ['man',    '泛指的「人们」', '*Kann man hier Fahrkarten kaufen?'],
+            ['etwas',  '某些东西',      '*Möchten Sie etwas trinken?'],
+            ['nichts', '什么也没有',    '*Ich esse jetzt nichts.'],
+            ['alles',  '一切',          '*Er versteht alles.'],
+            ['mehr',   '更多',          '*Möchten Sie noch mehr?'],
+            ['welch-', '哪一个 / 一些',  '*Hast du welche?'],
+        ]),
+        ('t', '还有相互代词 <b>sich / uns</b>，表示「互相」：'
+              '<b>Wir sehen uns morgen.</b>（我们明天见）。'
+              '以及专有名词的二格，只有这一种形式要会：<b>Karls Freunde</b>（卡尔的朋友们）。'),
+    ],
+},
+
+# ============ 10. 介词 ============
+{
+    'id': 'praep', 'no': 10,
+    'title': '介词',
+    'sub': '时间 · 地点 · 方式，各配固定的格',
+    'why': '考纲给介词开了整整三张表，是清单里篇幅最大的一块。'
+           '时间和地点的说法几乎每道听力题都要用，而且介词决定后面用哪个格。',
+    'blocks': [
+        ('r', '先记四个缩合形式', '介词和冠词会缩成一个词，写法上必须认得。'),
+        ('tab', ['原形', '缩合', '例子'], [
+            ['an dem', 'am',  '*am Montag'],
+            ['in dem', 'im',  '*im Sommer'],
+            ['zu dem', 'zum', '*zum Bahnhof'],
+            ['zu der', 'zur', '*zur Schule'],
+            ['in das', 'ins', '*ins Kino'],
+        ]),
+
+        ('r', '时间介词', '照考纲原样，这九个全部会考。'),
+        ('tab', ['介词', '格', '例子'], [
+            ['an',       '三格', '*am Morgen / am Dienstag'],
+            ['in',       '三格', '*im Sommer / im Februar'],
+            ['um',       '四格', '*um halb sieben'],
+            ['vor',      '三格', '*vor dem Konzert'],
+            ['nach',     '三格', '*nach dem Essen'],
+            ['ab',       '四格', '*ab Februar'],
+            ['für',      '四格', '*für drei Wochen'],
+            ['über',     '—',    '*über zwanzig Minuten'],
+            ['von … bis', '—',   '*von Dienstag bis Donnerstag'],
+        ]),
+        ('w', '钟点用 <b>um</b>（um acht Uhr），星期和日期用 <b>am</b>（am Montag），'
+              '月份和季节用 <b>im</b>（im Juli、im Winter）。这三个别混。'),
+
+        ('r', '地点介词', '注意 in 和 an 有两个格：静止在哪儿用三格，动向哪儿用四格。'),
+        ('tab', ['介词', '格', '例子'], [
+            ['in',        '三格 / 四格', '*im Park spielen / in die Stadt fahren'],
+            ['an',        '三格 / 四格', '*am Meer / an den See'],
+            ['auf',       '三格', '*auf dem Tisch'],
+            ['aus',       '三格', '*aus Italien'],
+            ['bei',       '三格', '*bei Familie Müller'],
+            ['nach',      '三格', '*nach Deutschland fahren'],
+            ['zu',        '三格', '*zur Schule gehen'],
+            ['unter',     '三格', '*unter der Nummer'],
+            ['von … nach', '三格', '*von Hamburg nach Bremen'],
+        ]),
+        ('w', '判断三格还是四格，问一句：<b>wo（在哪儿）→ 三格</b>，'
+              '<b>wohin（往哪儿）→ 四格</b>。<br>'
+              'Ich bin <b>im</b> Park.（在公园里）　vs　Ich gehe <b>in den</b> Park.（走进公园）'),
+
+        ('r', '方式介词', '考纲只列了四个。'),
+        ('tab', ['介词', '格', '例子'], [
+            ['mit',   '三格', '*mit dem Auto'],
+            ['ohne',  '四格', '*ohne dich'],
+            ['für',   '四格', '*für meinen Freund'],
+            ['aus',   '三格', '*aus Plastik'],
+        ]),
+        ('bsp', [
+            ('Ich fahre am Montag mit dem Zug nach Berlin.', '我周一坐火车去柏林。'),
+            ('Der Kurs beginnt um neun Uhr.', '课程九点开始。'),
+            ('Wir machen im Sommer Urlaub am Meer.', '我们夏天去海边度假。'),
+        ]),
+    ],
+},
+
+# ============ 11. 形容词 ============
+{
+    'id': 'adjektiv', 'no': 11,
+    'title': '形容词',
+    'sub': '三种用法 · 比较级最高级',
+    'why': '考纲列了 attributiv、prädikativ、adverbial 和 Komparation 四项。'
+           '前两种和副词用法完全不变形，很好学；放在名词前面才要加词尾。',
+    'blocks': [
+        ('r', '两种最简单的用法：完全不变形', '这也是考纲详表里唯一给了例句的两种。'),
+        ('tab', ['用法', '位置', '例子'], [
+            ['表语', '放在 sein / werden 后面', '*Das Haus ist modern.'],
+            ['副词', '直接修饰动词',            '*Ich lese gern.'],
+        ]),
+        ('t', '德语的形容词和副词<b>长得一样</b>，不像英语要加 -ly。'
+              'schnell 既是「快的」也是「快地」：<b>Er ist schnell.</b> / <b>Er fährt schnell.</b>'),
+
+        ('r', '放在名词前面就要加词尾', '这一项叫 attributiv，是形容词里唯一麻烦的部分。'),
+        ('t', '好在 A1 只要能<b>看懂</b>就行——考纲明说语法清单主要针对听读理解，'
+              '口语写作的形式正确性要求不高。所以先记一条最省力的规律：'),
+        ('tab', ['前面是什么', '词尾', '例子'], [
+            ['定冠词 der/die/das', '几乎都是 -e', '*der kleine Tisch'],
+            ['定冠词 + 阳性四格',   '-en',        '*Ich sehe den kleinen Tisch.'],
+            ['定冠词 + 复数',       '-en',        '*die kleinen Sachen'],
+            ['不定冠词 + 阳性',     '-er',        '*ein kleiner Tisch'],
+            ['不定冠词 + 阴性',     '-e',         '*eine kleine Lampe'],
+            ['不定冠词 + 中性',     '-es',        '*ein kleines Bett'],
+        ]),
+        ('w', '一个实用的偷懒法：<b>定冠词后面基本写 -e，复数和阳性四格写 -en</b>，'
+              '八成场合就对了。剩下两成读得懂就行，A1 不会因为这个扣掉及格线。'),
+
+        ('r', '比较级与最高级', '规则是加 -er 和 am …-sten，但最常用的几个不规则。'),
+        ('tab', ['原级', '比较级', '最高级'], [
+            ['klein 小',  '*kleiner',  '*am kleinsten'],
+            ['schnell 快', '*schneller', '*am schnellsten'],
+            ['gut 好',    '*besser',   '*am besten'],
+            ['viel 多',   '*mehr',     '*am meisten'],
+            ['gern 喜欢', '*lieber',   '*am liebsten'],
+        ]),
+        ('t', '比较时用 <b>als</b>（比），同级用 <b>so … wie</b>（和…一样）。'),
+        ('bsp', [
+            ('Der Zug ist schneller als der Bus.', '火车比公交快。'),
+            ('Ich trinke lieber Tee als Kaffee.', '比起咖啡我更爱喝茶。'),
+            ('Mein Bruder ist so groß wie ich.', '我哥和我一样高。'),
+            ('Das Zimmer ist nicht sehr groß, aber sehr hell.', '房间不大，但很亮堂。'),
+        ]),
+    ],
+},
+
+# ============ 12. 命令式 ============
+{
+    'id': 'imperativ', 'no': 12,
+    'title': '命令式与试卷指令',
+    'sub': '让别人做某事 · 看懂题目在要求什么',
+    'why': '考纲要求 du / ihr / Sie 三种命令式。而更现实的理由是：'
+           '<b>试卷上每一道题的指令语本身就是命令式</b>——看不懂指令，会做也答不对。',
+    'blocks': [
+        ('r', '三种形式', 'Sie 形式最常用，也最简单：动词原样 + Sie。'),
+        ('tab', ['对谁', '怎么变', '例子'], [
+            ['Sie（您）',  '动词 + Sie',        '*Kommen Sie bitte mit!'],
+            ['du（你）',   'du 形式去掉 -st',    '*Komm bitte nach Hause!'],
+            ['ihr（你们）', '和 ihr 形式一样，去掉主语', '*Kommt bitte alle mit!'],
+        ]),
+        ('w', '换元音的动词在 du 命令式里<b>不换回来</b>：'
+              'du fährst → <b>Fahr!</b>（不是 Fähr）。<br>'
+              '但 e→i 的换元音要保留：du sprichst → <b>Sprich!</b>'),
+        ('t', '加上 <b>bitte</b> 语气就客气了，口语考试里提要求一定要带上。'),
+        ('bsp', [
+            ('Sprechen Sie bitte langsamer!', '请您说慢一点。'),
+            ('Mach bitte das Fenster zu!', '请把窗户关上。'),
+            ('Kommen Sie bitte um neun Uhr!', '请您九点来。'),
+        ]),
+
+        ('r', '试卷上的指令语', '这些词看不懂，题就无从下手。全部是 Sie 命令式。'),
+        ('tab', ['指令', '意思'], [
+            ['*Kreuzen Sie an.',       '打叉选择'],
+            ['*Markieren Sie.',        '标出来'],
+            ['*Ergänzen Sie.',         '补全'],
+            ['*Ordnen Sie zu.',        '配对连线'],
+            ['*Schreiben Sie.',        '写'],
+            ['*Lesen Sie den Text.',   '读这段文字'],
+            ['*Hören Sie zweimal.',    '听两遍'],
+            ['*Wählen Sie die richtige Lösung.', '选出正确答案'],
+        ]),
+        ('drill', 'pruef', '去练：考试指令语与救场句'),
+    ],
+},
+
+# ============ 13. 连句与构词 ============
+{
+    'id': 'verbinden', 'no': 13,
+    'title': '连句与构词',
+    'sub': 'und / aber / denn · 长词怎么拆',
+    'why': '连词决定了后面的语序，接错了整句就散了。'
+           '而德语的长复合词看着吓人，其实拆开全是学过的词——这是阅读题的救命技能。',
+    'blocks': [
+        ('r', 'und / oder / aber / denn：语序不变',
+              '这四个只是把两个完整句子接起来，<b>后面那句照常「动词第二位」</b>。'),
+        ('bsp', [
+            ('Ich hätte gern eine Cola und ein Brötchen.', '我要一杯可乐和一个小面包。'),
+            ('Möchten Sie lieber Tee oder Kaffee?', '您想要茶还是咖啡？'),
+            ('Das ist schön, aber leider zu teuer.', '这个很好看，可惜太贵了。'),
+            ('Ich gehe nicht spazieren, denn es ist zu kalt.', '我不去散步了，因为太冷。'),
+        ]),
+        ('w', '<b>dann</b> 不一样：它是副词，占掉第一位，所以后面<b>动词紧跟着来，主语挪后</b>。<br>'
+              'Ich muss noch telefonieren, <b>dann gehen wir</b>.（不是 dann wir gehen）'),
+        ('t', '还有一个 <b>wenn</b>（如果 / 当…时），它引出从句，'
+              '<b>从句里的动词要跑到最末尾</b>。A1 只要能听懂，不要求自己造。'),
+        ('bsp', [
+            ('Wenn ich Zeit habe, komme ich mit.', '我要是有时间就一起去。'),
+        ]),
+
+        ('r', '动词决定句子还缺什么', '考纲把这叫 Verbergänzung，五种补足成分。'),
+        ('tab', ['补什么', '哪些动词', '例子'], [
+            ['主格',   'heißen / sein', '*Er heißt Heinz Bartels.'],
+            ['四格',   '大多数动词',     '*Ich nehme eine Cola.'],
+            ['三格',   'danken / gehören / geben / helfen', '*Gib mir dein Wörterbuch.'],
+            ['地点',   'wohnen / liegen', '*Wir wohnen in der Heinestraße 7.'],
+            ['性质',   'sein + 形容词',   '*Der Film ist langweilig.'],
+        ]),
+
+        ('r', '复合词：从后往前读', '德语可以把好几个词粘成一个。'
+              '<b>最后一个词决定意思和性别</b>，前面的都是修饰。'),
+        ('tab', ['复合词', '拆开', '性别跟谁'], [
+            ['*die Reisegruppe',  'Reise + Gruppe',   'die Gruppe'],
+            ['*der Bahnhofsplatz', 'Bahnhof + Platz', 'der Platz'],
+            ['*das Kinderbett',   'Kinder + Bett',    'das Bett'],
+        ]),
+        ('t', '所以看到不认识的长词别慌，<b>先找最后那一截</b>——那才是它到底是什么。'),
+
+        ('r', '几个高频后缀', '认得它们，生词也能猜个八九不离十。'),
+        ('tab', ['后缀', '作用', '例子'], [
+            ['-er',   '做这件事的人', '*der Arbeiter'],
+            ['-in',   '女性形式',     '*die Kollegin'],
+            ['-ung',  '动词变名词',   '*die Wohnung'],
+            ['un-',   '否定',        '*unbekannt'],
+            ['-los',  '没有…的',     '*arbeitslos'],
+            ['-bar',  '可以…的',     '*erreichbar'],
+        ]),
     ],
 },
 ]

@@ -22,21 +22,36 @@
 - 最小对立对 10 组（`Tür/Tur`、`Staat/Stadt`、`schön/schon`…），针对中文母语者的听辨盲区
 - 页面上任何德语词都能点着听
 
-**语法 · 先讲明白再去练**
+**语法 · 覆盖官方考纲全部 40 个条目**
 
 原先只有背单词和五个测验，没有一句讲解——让没学过的人去做 einundzwanzig 的听写题，
-那是猜谜不是练习。补了五课，按「不会就寸步难行」排序，不按语法书的章节顺序：
+那是猜谜不是练习。现在有十三课，覆盖范围以官方《Prüfungsziele》第 101–106 页的
+语法清单为准，40 个条目逐条对应。跑 `python3 src/check_lehrplan.py` 可验证有没有漏。
 
-1. **数字 0–100** — 21 = einundzwanzig 是个位在前、中间加 und、且必须连写；
-   16/17、20/30 的缩写与例外；听到 `…und…` 先别动笔
-2. **名词与性别** — 中文没有语法性，先建立概念（das Mädchen 是中性）；
-   复数一律 die；约八成能从词尾猜出来
-3. **动词变位** — 六个人称词尾、sein/haben、du/er 换元音、可分动词前缀跑句尾
-4. **句子语序** — 变位动词永远第二位（是第二个成分不是第二个词）；两种疑问句；
-   动词框：另一半跑到句尾，所以听德语要听到最后
-5. **三格与四格** — 捷径是四格只有阳性变（der→den）；三格动词与介词固定支配
+前五课按「不会就寸步难行」排，后八课按考纲补齐：
 
-每课的结构是「讲清规则 → 例句可点听 → 直接跳到对应测验」，把原先孤立的测验接到教学后面。
+| | 课 | 对应考纲 |
+| --- | --- | --- |
+| 1 | 数字 0–100 | Zahlwörter |
+| 2 | 名词与性别 | Genus · Numerus · Artikel definit |
+| 3 | 动词变位 | Präsens · Indikativ · trennbare Präfixe |
+| 4 | 句子语序 | Verbzweitstellung · Satzklammer · Fragesatz |
+| 5 | 三格与四格 | Kasus Nom/Akk/Dat |
+| 6 | 情态动词 | Modalverben（6 个）· Konjunktiv II |
+| 7 | 完成时 Perfekt | Perfekt（考纲点名的 15 个动词）· Partizipien · Präteritum |
+| 8 | 冠词全家与否定 | ein/kein/mein/dieser/Nullartikel · Negation |
+| 9 | 代词 | Personal Nom/Akk/Dat · Frage · man/etwas · Genitiv bei Eigennamen |
+| 10 | 介词 | temporal · lokal · modal（三张表） |
+| 11 | 形容词 | attributiv · prädikativ · adverbial · Komparation |
+| 12 | 命令式与试卷指令 | Imperativ（并覆盖试卷上的指令语） |
+| 13 | 连句与构词 | Satzverbindungen · Verbergänzung · Wortbildung |
+
+每课的结构是「讲清规则 → 例句可点听 → 直接跳到对应测验」。
+
+编写取向来自考纲第 100 页的说明：语法清单主要面向**接受性技能**（听力、阅读），
+对口语写作产出「处于次要地位」，且 A1 阶段「可理解性的重要性高于形式正确性」。
+所以讲解偏向「听到／看到这个形式意味着什么」，而不是纠结产出时的词尾——
+形容词词尾那一节就明说了「读得懂就行，不会因为这个扣掉及格线」。
 
 **词汇**
 
@@ -122,7 +137,8 @@ python3 src/build.py                           # 重新构建，下拉里才会�
 | `src/wortliste.json` | 解析产物，687 条 |
 | `src/make_audio.py` | 用 edge-tts 预生成德语音频，产出 `audio/<音色>/<id>.mp3`；断了重跑即可 |
 | `src/aussprache.py` | 第 0 关发音内容（字母表 / 规则 / 最小对立对），手工编写 |
-| `src/grammatik.py` | 五课语法教学内容，块式结构（讲解 / 规则 / 坑 / 表格 / 例句 / 跳测验）|
+| `src/grammatik.py` | 十三课语法教学内容，块式结构（讲解 / 规则 / 坑 / 表格 / 例句 / 跳测验）|
+| `src/check_lehrplan.py` | 考纲 40 条 → 课号的对照，跑一下验证有没有漏 |
 | `src/lexikon.py` | 685 条的主题归类与中文释义，手工编写；构建期校验与词表一一对应 |
 | `src/tpl.html` | 应用模板，含样式、逻辑与内嵌字体，`__DATA__` 为数据占位符 |
 | `src/build.py` | 合成数据并注入模板，产出根目录 `index.html`（含构建期自检） |
