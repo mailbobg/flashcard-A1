@@ -96,6 +96,27 @@ def load_woerter():
     return out
 
 
+def audio_check(data):
+    """核对预生成音频的覆盖：每一条会被朗读的文本都得有对应文件。
+
+    加这个是因为踩过一次——make_audio.py 自己按下标读 aussprache.py，
+    ALPHABET 后来多了一个字段，下标整体后移，于是它生成了字母名、漏掉了
+    字母表例词，而两边用的是同一个错下标，自查还显示「缺 0」。
+    这里改从 data 里取，和前端看到的完全一致，漏了就在构建时喊出来。
+    """
+    if not data['audio']:
+        return
+    sys.path.insert(0, HERE)
+    from make_audio import texts, clip_id
+    for a in data['audio']:
+        d = os.path.join(ROOT, 'audio', a['v'])
+        have = {f[:-4] for f in os.listdir(d) if f.endswith('.mp3')} if os.path.isdir(d) else set()
+        miss = [t for t in texts() if clip_id(t) not in have]
+        if miss:
+            print('  ⚠ 音色 %s 缺 %d 条音频（会回落系统语音）：%s'
+                  % (a['v'], len(miss), ' / '.join(m[:20] for m in miss[:3])))
+
+
 def audio_index():
     """audio/index.json 由 make_audio.py 写出。没生成过音频就返回空，
     前端据此决定「发音」下拉里出不出微软选项——不会指向不存在的文件。"""
@@ -201,4 +222,5 @@ if __name__ == '__main__':
              sum(len(g['items']) for g in data['aussprache']['regeln']),
              len(data['aussprache']['paare'])))
     print('  朗读音色 %s' % (', '.join(a['v'] for a in data['audio']) or '未生成（跑 src/make_audio.py）'))
+    audio_check(data)
     print('  %d KB' % round(os.path.getsize(dst) / 1024))

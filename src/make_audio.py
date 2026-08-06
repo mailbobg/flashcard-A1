@@ -44,19 +44,23 @@ RETRIES = 3
 def texts():
     """应用里所有会被朗读的德语文本，去重。
 
-    与 build.py 取自同一批数据源。漏了哪一条，前端播放时会回落到系统
-    语音——不会出错，但那条享受不到好音色。
+    一律从 build.py 已经组装好的 DATA 里取，不自己去读 aussprache.py 的
+    元组下标——之前就是那样写的，后来 ALPHABET 加了个 name 字段导致下标
+    整体后移，脚本闷声生成了字母名、漏掉了字母表例词。字段结构只该有
+    一处知道，就是 build.py。
     """
-    from build import load_woerter
-    from aussprache import ALPHABET, REGELN, MINIMALPAARE
+    from build import load_woerter, aussprache_data
     out = []
     for w in load_woerter():
         for item in [w] + w.get('derived', []):
             out.append(item['w'])
             out += item['ex']
-    out += [a[2] for a in ALPHABET]
-    out += [x for _, rules in REGELN for r in rules for x in r[2]]
-    out += [x for p in MINIMALPAARE for x in p[:2]]
+    a = aussprache_data()
+    for L in a['alphabet']:
+        out.append(L['ex'])       # 例词：点击时朗读
+        out.append(L['name'])     # 字母名：内置录音缺失时的回落
+    out += [x for g in a['regeln'] for r in g['items'] for x in r['ex']]
+    out += [p[k] for p in a['paare'] for k in ('a', 'b')]
     seen, uniq = set(), []
     for t in out:
         t = (t or '').strip()
