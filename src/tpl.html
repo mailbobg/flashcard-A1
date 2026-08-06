@@ -305,6 +305,10 @@ main{flex:1 1 auto;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:
 .word .wd{word-break:break-word}
 .row .w .art{font-size:11px;padding:1px 6px;margin-right:4px}
 
+.thema{align-items:flex-start;padding:13px var(--spacing-4)}
+.thema .bar{margin-top:9px}
+.thema .n{font-variant-numeric:tabular-nums;padding-top:2px}
+
 /* ---------- 发音关 ---------- */
 .alpha{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:var(--spacing-2)}
 .ab{
@@ -722,7 +726,15 @@ function renderHome() {
     <button class="btn line" id="goAll" style="flex:1">全部乱序</button>
   </div>
 
-  <div class="sec-t">按词性</div>
+  <div class="sec-t">按主题 · 考纲的十个范围</div>
+  ${DATA.themen.filter(t => t.amt).map(t => themaRow(t)).join('')}
+
+  <div class="sec-t">主题之外</div>
+  <div class="tiny muted" style="margin:-4px 2px 10px">
+    这两类官方 Themen 里没有，但字母序词表里占了近四成，且句句都要用。</div>
+  ${DATA.themen.filter(t => !t.amt).map(t => themaRow(t)).join('')}
+
+  <div class="sec-t">按性别</div>
   <div class="card rowgrp">
     ${[['der', '阳性'], ['die', '阴性'], ['das', '中性']].map(([a, zh]) => `
       <div class="row" data-art="${a}">
@@ -736,7 +748,7 @@ function renderHome() {
       <span class="n">${ALL.length - NOUNS.length}</span>
     </div>
   </div>
-  <div class="credit">词表来自 Goethe-Zertifikat A1 官方 Wortliste</div>`;
+  <div class="credit">词表与主题划分均来自 Goethe-Zertifikat A1 官方 Wortliste</div>`;
 
   $('goLaut').onclick = () => { curView = 'laut';
     [...$('tabs').children].forEach(x => x.classList.toggle('on', x.dataset.t === 'laut'));
@@ -751,6 +763,10 @@ function renderHome() {
     q.length ? startStudy(q, '难词本') : toast('还没有标记的难词');
   };
   $('goAll').onclick = () => startStudy(shuffle(ALL.slice()), '全部乱序');
+  view.querySelectorAll('[data-thema]').forEach(b => b.onclick = () => {
+    const t = DATA.themen.find(x => x.c === b.dataset.thema);
+    startStudy(byThema(t.c).slice(), t.zh);
+  });
   view.querySelectorAll('[data-art]').forEach(b => b.onclick = () => {
     const a = b.dataset.art;
     const list = a === 'rest' ? ALL.filter(w => w.pos !== 'noun') : NOUNS.filter(w => w.art === a);
@@ -758,6 +774,21 @@ function renderHome() {
   });
 }
 const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0;[a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+const byThema = c => ALL.filter(w => w.thema === c);
+/* 主题行：右边那条是已掌握的比例，一眼看出哪个主题还是空的 */
+function themaRow(t) {
+  const list = byThema(t.c);
+  const done = list.filter(isMastered).length;
+  return `<button class="card chap thema" data-thema="${t.c}">
+    <div class="bd">
+      <div class="t">${t.zh}</div>
+      <div class="e">${esc(t.sub)}</div>
+      <div class="bar"><i style="width:${done / list.length * 100}%"></i></div>
+    </div>
+    <div class="n">${done}/${list.length}</div>
+  </button>`;
+}
 
 /* ---------- 发音关 ---------- */
 function renderLaut() {
@@ -814,14 +845,14 @@ let q = '';
 function renderList() {
   view.innerHTML = `
     <div style="display:flex;gap:8px;margin-top:4px">
-      <input class="search" id="q" placeholder="搜索德语词…" value="${esc(q)}">
-      <button class="btn ${S.set.maskZh ? 'pri' : 'line'}" id="mask" style="flex:0 0 auto">${S.set.maskZh ? '显示' : '遮住'}例句</button>
+      <input class="search" id="q" placeholder="搜德语词或中文…" value="${esc(q)}">
+      <button class="btn ${S.set.maskZh ? 'pri' : 'line'}" id="mask" style="flex:0 0 auto">${S.set.maskZh ? '显示' : '遮住'}中文</button>
     </div>
     <div id="rows"></div>`;
   const rows = $('rows');
   const draw = () => {
     const kw = q.trim().toLowerCase();
-    const hit = ALL.filter(w => !kw || w.w.toLowerCase().includes(kw));
+    const hit = ALL.filter(w => !kw || w.w.toLowerCase().includes(kw) || w.zh.includes(kw));
     let h = `<div class="grp">共 ${hit.length} 条</div><div class="card rowgrp">`;
     hit.slice(0, 400).forEach(w => {
       const b = S.prog[w.w]?.box || 0, sn = !isNew(w);
@@ -832,7 +863,7 @@ function renderList() {
         <div class="bd">
           <span class="w">${artHTML(w)}${esc(w.w)}</span>
           ${w.pl && w.pl !== w.w ? `<span class="p">Pl. ${esc(w.pl)}</span>` : ''}
-          ${w.ex[0] ? `<div class="z${S.set.maskZh ? ' hide' : ''}">${esc(w.ex[0])}</div>` : ''}
+          <div class="z${S.set.maskZh ? ' hide' : ''}">${esc(w.zh)}</div>
         </div>
         <span class="iconbtn" data-say="${esc(w.w)}">${IC.spk}</span>
       </div>`;
@@ -921,9 +952,11 @@ function drawCard(speak) {
   $('stProg').style.width = (qi / Q.length * 100) + '%';
   $('stStar').classList.toggle('star-on', !!S.prog[w.w]?.star);
 
-  const kind = w.pos === 'noun' ? `${w.art} 名词` : '动词 / 其他';
+  // 按主题进来学时队列名就是主题名，别在标签里重复一遍
+  const thema = (DATA.themen.find(t => t.c === w.thema) || {}).zh || '';
+  const kind = thema === qName ? '' : thema;
   $('faceF').innerHTML = `
-    <div class="tag">${esc(qName)}${qName ? ' · ' : ''}${esc(kind)}</div>
+    <div class="tag">${[qName, kind].filter(Boolean).map(esc).join(' · ')}</div>
     <div class="mid">
       <div class="word${w.w.length > 14 ? ' long' : ''}">${wordHTML(w, true)}</div>
       <div class="spk">
@@ -938,6 +971,7 @@ function drawCard(speak) {
   $('faceB').innerHTML = `
     <div class="tag">${wordHTML(w, false)}${w.pl && w.pl !== w.w ? `　Pl. ${esc(w.pl)}` : ''}</div>
     <div class="mid">
+      <div class="zh">${esc(w.zh)}</div>
       ${w.ex.length ? w.ex.map(x => `<div class="ex">
         <div class="en">${esc(x)}</div>
         <div class="rowbtn">
@@ -947,7 +981,8 @@ function drawCard(speak) {
       </div>`).join('') : '<div class="ex"><div class="cn">官方词表未给例句</div></div>'}
       ${(w.derived || []).length ? `<div class="sec-t" style="margin-bottom:8px">同词族</div>
         <div class="card rowgrp">${w.derived.map(d => `<div class="row" data-w="${esc(d.w)}">
-          <div class="bd"><span class="w">${artHTML(d)}${esc(d.w)}</span></div>
+          <div class="bd"><span class="w">${artHTML(d)}${esc(d.w)}</span>
+            <div class="z">${esc(d.zh)}</div></div>
           <span class="iconbtn" data-say="${esc(d.w)}">${IC.spk}</span></div>`).join('')}</div>` : ''}
     </div>
     <div class="hint">轻点卡片返回正面　·　左右滑动切换单词</div>`;

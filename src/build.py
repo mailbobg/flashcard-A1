@@ -8,7 +8,7 @@
   wortliste.json   由 parse_wortliste.py 从官方词表 PDF 解析而来
                    （含性别、复数、例句——官方直接给全）
   aussprache.py    第 0 章发音关，手工编写
-  themen.py        官方主题分组（词表第 4 页），手工整理
+  lexikon.py       主题归类与中文释义，手工编写
 """
 import json, os, re, sys
 
@@ -18,6 +18,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 from aussprache import ALPHABET, REGELN, MINIMALPAARE   # noqa: E402
+from lexikon import WORDS, THEMEN, EXTRA                # noqa: E402
 
 
 def logo_svg():
@@ -48,6 +49,8 @@ def load_woerter():
             'pl': e['pl'],              # 展开后的复数，展不开为 None
             'plmark': e['plmark'],      # 官方原始标记，保留以便核对
             'ex': e['ex'],
+            'thema': WORDS[e['w']][0],
+            'zh': WORDS[e['w']][1],
         }
         # 少数词条在词表里出现两次（an sein / auf sein 既列在 a 处，
         # 又挂在 sein 名下）。界面按词形索引，重名会互相覆盖，这里合并例句。
@@ -74,6 +77,14 @@ def aussprache_data():
     }
 
 
+def heads_all(woerter):
+    """主词条 + 派生词条，摊平成一串"""
+    for x in woerter:
+        yield x
+        for d in x.get('derived', []):
+            yield d
+
+
 def check(data):
     """构建期自检：数据坏了要在这里就停住，而不是到界面上才发现"""
     w = data['woerter']
@@ -88,6 +99,13 @@ def check(data):
     if bad_art:
         raise SystemExit('名词缺冠词: %s' % bad_art[:5])
     # 复数若已展开，必须与单数不同（单复同形的官方标记是 –，展开后相同，属正常）
+    no_zh = [x['w'] for x in heads_all(w) if not x.get('zh')]
+    if no_zh:
+        raise SystemExit('缺中文释义: %s' % no_zh[:5])
+    codes = {c for c, _, _ in THEMEN + EXTRA}
+    bad_t = [x['w'] for x in heads_all(w) if x.get('thema') not in codes]
+    if bad_t:
+        raise SystemExit('主题码不在清单里: %s' % bad_t[:5])
     a = data['aussprache']
     if len(a['alphabet']) < 30:
         raise SystemExit('字母表不全，应含 26 字母 + ä ö ü ß')
@@ -99,7 +117,9 @@ def check(data):
 
 if __name__ == '__main__':
     woerter = load_woerter()
-    data = {'woerter': woerter, 'aussprache': aussprache_data()}
+    data = {'woerter': woerter, 'aussprache': aussprache_data(),
+            'themen': [{'c': c, 'zh': zh, 'sub': sub, 'amt': True} for c, zh, sub in THEMEN]
+                    + [{'c': c, 'zh': zh, 'sub': sub, 'amt': False} for c, zh, sub in EXTRA]}
     n = check(data)
 
     nouns = [x for x in woerter if x['pos'] == 'noun']

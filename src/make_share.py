@@ -15,10 +15,10 @@ from build import logo_svg                     # noqa: E402  标志的唯一来�
 
 
 def word_count():
-    """分享图上的词数要和应用里一致"""
-    import json
-    d = json.load(open(os.path.join(HERE, 'data.json'), encoding='utf-8'))
-    return sum(len(s['words']) for s in d['sections'])
+    """分享图上的词数要和应用里一致——跟 build.py 走同一条路径，不另算一遍"""
+    from build import load_woerter
+    ws = load_woerter()
+    return len(ws) + sum(len(w.get('derived', [])) for w in ws)
 
 
 def fonts_css():
