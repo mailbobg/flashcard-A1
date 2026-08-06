@@ -165,6 +165,12 @@ main{flex:1 1 auto;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:
 }
 .tabbar button svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .tabbar button.on{color:var(--color-text-primary);background:var(--color-accent-muted)}
+/* Koboyo 手绘图标：填充风格，非线性。class 由 build.py 注入到 svg 根 */
+.ki{fill:currentColor;stroke:none;display:inline-block}
+.tabbar button .ki{width:20px;height:20px}
+.iconbtn .ki{width:18px;height:18px}
+.btn .ki{width:15px;height:15px;vertical-align:-2px}
+.chap .ki{width:22px;height:22px}
 
 /* ---------- 基础控件 ---------- */
 .btn{
@@ -663,14 +669,23 @@ function applyTheme() {
   document.documentElement.classList.toggle('dark', dark);   // :root.dark → color-scheme:dark → light-dark() 全量切换
   document.querySelector('meta[name=theme-color]').content = dark ? '#111112' : '#F8F4ED';
 }
-/* 线性图标（与 Astryx 的线条风格一致） */
+/* Koboyo 手绘图标（构建时注入 src/icons/*.svg） */
+const K = __ICONS__;
+/* 线性图标（与 Astryx 的线条风格一致）；朗读与慢速改用手绘图标 */
 const IC = {
-  spk: '<svg viewBox="0 0 24 24"><path d="M11 5L6.5 9H3v6h3.5L11 19z"/><path d="M14.8 9.6a3.4 3.4 0 0 1 0 4.8"/><path d="M17.4 7a7 7 0 0 1 0 10"/></svg>',
-  slow: '<svg viewBox="0 0 24 24"><path d="M11 5L6.5 9H3v6h3.5L11 19z"/><path d="M14.8 9.6a3.4 3.4 0 0 1 0 4.8"/></svg>',
+  spk: K.vol,
+  slow: K.slow,
   play: '<svg viewBox="0 0 24 24"><path d="M7.5 4.8l11 7.2-11 7.2z"/></svg>',
   tick: '<svg viewBox="0 0 24 24"><path d="M5 12.6l4.6 4.6L19 7.6"/></svg>'
 };
 applyTheme();
+/* 底栏四个 tab 换成 Koboyo 手绘图标 */
+const TAB_IC = { home: 'book', laut: 'vol', list: 'list', me: 'set' };
+document.querySelectorAll('#tabs button').forEach(b => {
+  b.insertAdjacentHTML('afterbegin', K[TAB_IC[b.dataset.t]]);
+  const old = b.querySelector('svg:not(.ki)');
+  if (old) old.remove();
+});
 
 /* 间隔重复：盒子 0..5 对应的下次复习间隔 */
 const STEP = [0, 10 * 60e3, 24 * 3600e3, 3 * 24 * 3600e3, 7 * 24 * 3600e3, 21 * 24 * 3600e3];
@@ -873,31 +888,31 @@ function renderHome() {
 
   <div class="sec-t">专项练习 · 考试必练</div>
   <button class="card chap" data-drill="num">
-    <div class="no" style="background:var(--color-brand)">1</div>
+    <span class="no ki" style="background:var(--color-brand)">${K.num}</span>
     <div class="bd"><div class="t">数字 · 0-100</div>
       <div class="e">听德语报数填数字 —— 专治 einundzwanzig 倒读</div></div>
     <div class="n">TTS 出题</div>
   </button>
   <button class="card chap" data-drill="zeit">
-    <div class="no" style="background:var(--color-brand)">2</div>
+    <span class="no ki" style="background:var(--color-brand)">${K.zeit}</span>
     <div class="bd"><div class="t">时间 · halb 的陷阱</div>
       <div class="e">halb drei 是 2:30 不是 3:30，Viertel nach / vor 同理</div></div>
     <div class="n">TTS 报时</div>
   </button>
   <button class="card chap" data-drill="art">
-    <div class="no" style="background:var(--color-brand)">3</div>
+    <span class="no ki" style="background:var(--color-brand)">${K.art}</span>
     <div class="bd"><div class="t">性别 · der / die / das</div>
       <div class="e">看名词选冠词，错了会告诉你词尾规律</div></div>
     <div class="n">${NOUNS.length} 个名词</div>
   </button>
   <button class="card chap" data-drill="satz">
-    <div class="no" style="background:var(--color-brand)">4</div>
+    <span class="no ki" style="background:var(--color-brand)">${K.satz}</span>
     <div class="bd"><div class="t">句子 · Satzklammer 语序</div>
       <div class="e">动词框结构：情态 / 可分 / Perfekt，把词块排成句</div></div>
     <div class="n">排序练习</div>
   </button>
   <button class="card chap" data-drill="pruef">
-    <div class="no" style="background:var(--color-brand)">5</div>
+    <span class="no ki" style="background:var(--color-brand)">${K.pruef}</span>
     <div class="bd"><div class="t">考试用语 · 指令语 + 救场句</div>
       <div class="e">看得懂试卷指令，考场上答不上来有话说</div></div>
     <div class="n">单词表</div>

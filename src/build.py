@@ -31,6 +31,24 @@ def logo_data_uri():
     return 'data:image/svg+xml,' + quote(logo_svg(), safe="/:=<>' ")
 
 
+def icons_js():
+    """Koboyo 手绘图标（src/icons/*.svg）→ JS 对象字符串，替换模板的 __ICONS__。
+    图标一律加 class="ki"，由 CSS 统一控制填充与尺寸。"""
+    import json as _json
+    names = {
+        'book-open': 'book', 'volume': 'vol', 'list': 'list', 'settings': 'set',
+        'snail': 'slow', 'calculator': 'num', 'clock': 'zeit', 'tag': 'art',
+        'speech-bubble': 'satz', 'certificate': 'pruef',
+    }
+    d = {}
+    for f, key in names.items():
+        p = os.path.join(HERE, 'icons', f + '.svg')
+        svg = open(p, encoding='utf-8').read().strip()
+        svg = svg.replace('<svg ', '<svg class="ki" ', 1)
+        d[key] = svg
+    return _json.dumps(d, ensure_ascii=False)
+
+
 def load_woerter():
     """读入解析好的官方词表，整理成应用用的结构。
 
@@ -145,9 +163,10 @@ if __name__ == '__main__':
 
     nouns = [x for x in woerter if x['pos'] == 'noun']
     tpl = open(os.path.join(HERE, 'tpl.html'), encoding='utf-8').read()
-    for ph in ('__DATA__', '__BASE__'):
+    for ph in ('__DATA__', '__BASE__', '__ICONS__'):
         assert ph in tpl, 'tpl.html 缺 %s 占位符' % ph
     html = (tpl.replace('__DATA__', json.dumps(data, ensure_ascii=False, separators=(',', ':')))
+               .replace('__ICONS__', icons_js())
                .replace('__LOGO_URI__', logo_data_uri())
                .replace('__LOGO__', logo_svg())
                .replace('__BASE__', BASE)
