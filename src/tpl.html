@@ -700,11 +700,13 @@ function applyTheme() {
 }
 /* Koboyo 手绘图标（构建时注入 src/icons/*.svg） */
 const K = __ICONS__;
-/* 本地字母名语音（构建时注入 src/alphabet_audio.json）：离线标准音，点击字母优先播放 */
+/* 本地字母名语音（构建时注入 src/alphabet_audio.json），用系统德语语音录的。
+   只在音源选「系统语音」时用它——选了预生成音色却播这个，字母和例词会明显
+   是两个人在读。其余情况让字母名走 say()，跟随所选音源。 */
 const LA = __ALPH_AUDIO__;
 let laAudio = null;
 function speakLocal(kind, letter, text) {
-  if (kind === 'letter' && LA[letter]) {
+  if (kind === 'letter' && LA[letter] && S.set.tts === 'sys') {
     stopSpeak();
     try {
       laAudio = new Audio('data:audio/mp4;base64,' + LA[letter]);
