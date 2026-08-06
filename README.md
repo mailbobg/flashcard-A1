@@ -52,9 +52,21 @@
   三种触发情形
 - **考试用语**：题目指令语（`Kreuzen Sie an`…）+ 口语救场句（`Wie bitte?`…），可点听
 
+**朗读**
+
+三种音源在同一个「发音」下拉里选：
+
+- **本机德语音色**（离线）。数量由浏览器决定：Safari 与 iPhone 每个 locale 只交出一个，
+  德语通常只有 Anna；Chrome 会列出系统里装的全部（本机 9 个）。
+  英语程序不需要操心这件事，是因为 macOS 装了 7 个英语 locale，Safari 里就有 25 个音色可选
+- **微软预生成音频**（推荐）。构建期用 Azure Speech 合成好当静态文件发，运行时不需要密钥
+  也不需要接口，播过一次浏览器就缓存。密钥只从环境变量读，不进代码也不进仓库
+- **谷歌在线**，每次朗读都要联网
+
+另有固定 0.4 倍的慢速，语速可调。
+
 **其他**
 
-- 朗读走系统 TTS（Web Speech API），优先选 `de-DE` 语音，语速可调，另有固定 0.4 倍的慢速
 - 语音来源可切**谷歌在线**：系统德语语音不足或听不清时使用，发音更清晰（需联网）
 - 浅色 / 深色主题（基于 `light-dark()` + `color-scheme`）
 - 内嵌 Figtree 可变字体（OFL），latin-ext 子集覆盖 IPA 扩展区与 ä ö ü ß
@@ -78,10 +90,21 @@ python3 src/parse_wortliste.py materials/official/A1_SD1_Wortliste_02.pdf   # �
 python3 src/build.py                                                       # 生成 index.html
 ```
 
+想要微软音色（可选，约 3.1 万字符，Azure 免费层每月 50 万）：
+
+```bash
+export AZURE_SPEECH_KEY=<密钥>
+export AZURE_SPEECH_REGION=<区域>
+python3 src/make_audio.py --dry-run   # 先看要合成多少
+python3 src/make_audio.py             # 生成 audio/，可重复运行，已存在的跳过
+python3 src/build.py                  # 重新构建，下拉里才会出现微软选项
+```
+
 | 文件 | 说明 |
 | --- | --- |
 | `src/parse_wortliste.py` | 解析官方词表 PDF：按页现算基准列、展开复数标记、合并折行复合词 |
 | `src/wortliste.json` | 解析产物，687 条 |
+| `src/make_audio.py` | 用 Azure Speech 预生成德语音频，产出 `audio/<音色>/<id>.mp3` |
 | `src/aussprache.py` | 第 0 关发音内容（字母表 / 规则 / 最小对立对），手工编写 |
 | `src/lexikon.py` | 685 条的主题归类与中文释义，手工编写；构建期校验与词表一一对应 |
 | `src/tpl.html` | 应用模板，含样式、逻辑与内嵌字体，`__DATA__` 为数据占位符 |

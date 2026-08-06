@@ -8,6 +8,7 @@
   wortliste.json   由 parse_wortliste.py 从官方词表 PDF 解析而来
                    （含性别、复数、例句——官方直接给全）
   aussprache.py    第 0 章发音关，手工编写
+  audio/index.json 微软音色清单，由 make_audio.py 生成（可选）
   lexikon.py       主题归类与中文释义，手工编写
 """
 import json, os, re, sys
@@ -95,6 +96,15 @@ def load_woerter():
     return out
 
 
+def audio_index():
+    """audio/index.json 由 make_audio.py 写出。没生成过音频就返回空，
+    前端据此决定「发音」下拉里出不出微软选项——不会指向不存在的文件。"""
+    p = os.path.join(ROOT, 'audio', 'index.json')
+    if not os.path.exists(p):
+        return []
+    return json.load(open(p, encoding='utf-8'))
+
+
 def aussprache_data():
     return {
         'alphabet': [{'l': a[0], 'ipa': a[1], 'name': a[2], 'ex': a[3], 'tip': a[4]} for a in ALPHABET],
@@ -164,7 +174,7 @@ def check(data):
 
 if __name__ == '__main__':
     woerter = load_woerter()
-    data = {'woerter': woerter, 'aussprache': aussprache_data(),
+    data = {'woerter': woerter, 'aussprache': aussprache_data(), 'audio': audio_index(),
             'satz': SATZ,
             'themen': [{'c': c, 'zh': zh, 'sub': sub, 'amt': True} for c, zh, sub in THEMEN]
                     + [{'c': c, 'zh': zh, 'sub': sub, 'amt': False} for c, zh, sub in EXTRA]}
@@ -190,4 +200,5 @@ if __name__ == '__main__':
           % (len(data['aussprache']['alphabet']),
              sum(len(g['items']) for g in data['aussprache']['regeln']),
              len(data['aussprache']['paare'])))
+    print('  微软音色 %s' % (', '.join(a['v'] for a in data['audio']) or '未生成（跑 src/make_audio.py）'))
     print('  %d KB' % round(os.path.getsize(dst) / 1024))

@@ -7,3 +7,8 @@ __pycache__/
 # materials/README.md 记录了每份素材的来源与下载地址，照着它可以重新取回。
 materials/*
 !materials/README.md
+
+# 预生成的德语音频（约 50 MB / 3200 个文件）。
+# 要不要入库取决于部署方式：Vercel 从 GitHub 拉代码，那就得入库；
+# 若改成单独上传或放对象存储，把下面两行留着即可。
+# audio/

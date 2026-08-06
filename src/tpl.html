@@ -766,6 +766,7 @@ loadVoices();
 /* 「发音」那行的小字。选项少不是应用挑剩的，得让用户知道数是谁给的 */
 function voiceNote() {
   if (!ALL_VOICES.length) return '正在读取系统语音…';
+  if (msVoice()) return '走微软预生成音频，放过一次后浏览器会缓存，之后离线也能用';
   if (S.set.tts === 'g') return '走谷歌德语，每次朗读要联网；本机音色见下拉里的其余项';
   return `本机德语音色 ${VOICES.length} 个（浏览器共交出 ${ALL_VOICES.length} 个语音）。`
        + (VOICES.length > 1 ? '只列德语——英语音色会把德语发音规则全读错' : '只有一个是浏览器的限制，见下方');
@@ -793,8 +794,38 @@ document.addEventListener('touchstart', primeTTS, { once: true, capture: true, p
 
 function stopSpeak() {
   try { if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel(); } catch (e) {}
+  if (msAudio) { try { msAudio.pause(); } catch (e) {} msAudio = null; }
   if (gAudio) { try { gAudio.pause(); } catch (e) {} }
   if (laAudio) { try { laAudio.pause(); } catch (e) {} }
+}
+/* 微软预生成音频：构建期用 Azure Speech 合成好当静态文件发，
+   运行时不需要密钥也不需要接口，浏览器缓存后离线也能用。
+   文件名由文本算出，算法必须和 src/make_audio.py 里的 clip_id 完全一致。 */
+const FNV_OFF = 0xcbf29ce484222325n, FNV_PRIME = 0x100000001b3n, U64 = 0xFFFFFFFFFFFFFFFFn;
+function clipId(text) {
+  let h = FNV_OFF;
+  for (const b of new TextEncoder().encode(text)) h = ((h ^ BigInt(b)) * FNV_PRIME) & U64;
+  return h.toString(16).padStart(16, '0');
+}
+/* 同一个回调可能被多条路径触发，包一层保证只走一次 */
+function once(fn) { let used = false; return () => { if (!used) { used = true; fn && fn(); } }; }
+const msVoice = () => (S.set.tts || '').startsWith('ms:') ? S.set.tts.slice(3) : null;
+
+let msAudio = null, msWarned = false;
+function speakMS(text, rate, cb, voice) {
+  stopSpeak();
+  /* onerror 与 play() 的 rejection 会各触发一次，不掐住就会读两遍 */
+  const fallback = once(() => {
+    if (!msWarned) { msWarned = true; toast('这条没有微软音频，用系统语音代读'); }
+    speakNow(text, rate, cb);
+  });
+  try {
+    msAudio = new Audio(`audio/${voice}/${clipId(text)}.mp3`);
+    msAudio.playbackRate = Math.max(.25, rate || 1);
+    msAudio.onended = once(cb);
+    msAudio.onerror = fallback;                 // 某条没预生成、或文件掉了
+    msAudio.play().catch(fallback);
+  } catch (e) { fallback(); }
 }
 /* Google TTS 在线源：系统语音只有一个 / 听不清时切过来。需要联网，但发音更清晰自然。
    audio 无跨域限制，直接播放即可；慢速用 playbackRate 实现。 */
@@ -840,6 +871,8 @@ function speakNow(text, rate, onend, attempt) {
   }, 450);
 }
 function say(text, rate, cb) {
+  const ms = msVoice();
+  if (ms) { speakMS(text, rate, cb, ms); return; }
   if (S.set.tts === 'g') { speakGoogle(text, rate, cb); return; }
   stopSpeak(); speakNow(text, rate, cb);
 }
@@ -1167,13 +1200,15 @@ function renderMe() {
       <input type="range" id="rate" min="0.5" max="1.3" step="0.05" value="${S.set.rate}"></div>
     <div class="set"><div class="lb">发音<small>${voiceNote()}</small></div>
       <select id="voice">${VOICES.map(v =>
-        `<option value="${esc(v.voiceURI)}"${S.set.tts !== 'g' && v.voiceURI === pickVoice()?.voiceURI ? ' selected' : ''}>${esc(v.name)}（本机 · 离线）</option>`).join('')}
+        `<option value="${esc(v.voiceURI)}"${(!S.set.tts || S.set.tts === 'sys') && v.voiceURI === pickVoice()?.voiceURI ? ' selected' : ''}>${esc(v.name)}（本机 · 离线）</option>`).join('')}
+        ${DATA.audio.map(a =>
+          `<option value="__ms:${a.v}__"${S.set.tts === 'ms:' + a.v ? ' selected' : ''}>${esc(a.zh)}（预生成 · 首次需联网）</option>`).join('')}
         <option value="__g__"${S.set.tts === 'g' ? ' selected' : ''}>谷歌德语（更自然 · 需联网）</option>
       </select></div>
     <div class="set"><div class="lb">翻卡自动朗读<small>显示新卡片时自动读一遍</small></div>
       <button class="sw${S.set.autoSpeak ? ' on' : ''}" id="auto"><i></i></button></div>
   </div>
-  ${(VOICES.length > 1 || !ALL_VOICES.length) ? '' : `<div class="ltip" style="margin-top:8px"><b>!</b>
+  ${(VOICES.length > 1 || !ALL_VOICES.length || DATA.audio.length) ? '' : `<div class="ltip" style="margin-top:8px"><b>!</b>
     <div class="tx">这个浏览器每种语言只交出一个音色，所以本机德语只剩 ${VOICES.length} 个可选——
       这是浏览器的限制，应用里加不出来。<br>
       电脑上换 <b>Chrome</b> 打开，能拿到系统里全部德语音色；iPhone 上所有浏览器都是同一套内核，
@@ -1198,8 +1233,10 @@ function renderMe() {
   $('rate').oninput = e => { S.set.rate = +e.target.value; save(); };
   $('voice').onchange = e => {
     // 同一个下拉里既有本机音色也有在线音色，靠哨兵值分派
-    if (e.target.value === '__g__') { S.set.tts = 'g'; }
-    else { S.set.tts = 'sys'; S.set.voice = e.target.value; }
+    const v = e.target.value, ms = v.match(/^__ms:(.+)__$/);
+    if (ms) { S.set.tts = 'ms:' + ms[1]; }
+    else if (v === '__g__') { S.set.tts = 'g'; }
+    else { S.set.tts = 'sys'; S.set.voice = v; }
     save();
   };
   $('auto').onclick = e => { S.set.autoSpeak = !S.set.autoSpeak; e.currentTarget.classList.toggle('on', S.set.autoSpeak); save(); };
