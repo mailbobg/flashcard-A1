@@ -501,6 +501,16 @@ input[type=range]{width:118px;accent-color:var(--color-accent);font-family:inher
 .dseg button{flex:1;background:var(--color-background-muted);border:0;border-radius:var(--radius-full);padding:9px 0;
   font-size:var(--font-size-sm);font-weight:var(--font-weight-semibold);font-family:inherit;color:var(--color-text-secondary)}
 .dseg button.on{background:var(--color-accent);color:var(--color-on-accent)}
+/* 首页三段切换：吸顶固定，滚动时一直可见、随时可切。
+   main 左右有 padding，用负 margin 撑通栏再补回来 */
+.hseg{
+  position:sticky;top:0;z-index:20;display:flex;gap:var(--spacing-2);
+  margin:0 calc(var(--spacing-5) * -1) var(--spacing-4);
+  padding:10px var(--spacing-5) 12px;
+  background:color-mix(in srgb, var(--color-background-body) 88%, transparent);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-bottom:var(--border-width) solid var(--color-border);
+}
 /* 出题区 */
 .qcard{padding:var(--spacing-5);margin-top:var(--spacing-3);text-align:center}
 .qbig{font-size:var(--font-size-5xl);font-weight:var(--font-weight-semibold);letter-spacing:-.02em;line-height:1.1;word-break:break-word}
@@ -1051,7 +1061,7 @@ function renderHome() {
   const C = 2 * Math.PI * 35;
   const byArt = a => NOUNS.filter(w => w.art === a).length;
 
-  const seg = `<div class="dseg" style="margin-top:4px">
+  const seg = `<div class="dseg hseg">
     <button data-ht="overview" class="${homeTab === 'overview' ? 'on' : ''}">总览</button>
     <button data-ht="gram" class="${homeTab === 'gram' ? 'on' : ''}">语法</button>
     <button data-ht="thema" class="${homeTab === 'thema' ? 'on' : ''}">主题</button>
