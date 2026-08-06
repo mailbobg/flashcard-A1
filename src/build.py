@@ -38,7 +38,7 @@ def icons_js():
     names = {
         'book-open': 'book', 'volume': 'vol', 'list': 'list', 'settings': 'set',
         'snail': 'slow', 'calculator': 'num', 'clock': 'zeit', 'tag': 'art',
-        'speech-bubble': 'satz', 'certificate': 'pruef',
+        'speech-bubble': 'satz', 'certificate': 'pruef', 'clipboard-check': 'quiz',
     }
     d = {}
     for f, key in names.items():
