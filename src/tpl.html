@@ -788,7 +788,8 @@ function applyTheme() {
 }
 /* Koboyo 手绘图标（构建时注入 src/icons/*.svg） */
 const K = __ICONS__;
-/* 本地字母名语音（构建时注入 src/alphabet_audio.json）。一律用它，不跟随音源。
+/* 本地字母名语音（构建时注入 src/alphabet_audio.json，edge-tts 纯德语 Katja 生成）。
+   一律用它，不跟随音源。
 
    曾经改成让字母名跟随音源走 TTS，结果读错了：aussprache.py 里的字母名是
    拼音式写法（ah / beh / ie / kuh），TTS 把它们当普通德语单词念，出来的不是

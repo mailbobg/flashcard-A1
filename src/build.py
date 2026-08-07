@@ -54,8 +54,9 @@ def icons_js():
 
 
 def alphabet_audio_js():
-    """本地字母名语音（src/alphabet_audio.json，由 build_sounds.py 用系统德语语音生成）。
-    → JS 对象 {字母: base64 m4a}，替换模板的 __ALPH_AUDIO__。"""
+    """本地字母名语音（src/alphabet_audio.json，用 edge-tts 纯德语 Katja 语音生成）。
+    必须用纯德语语音：多语言语音（如 Seraphina）会把 jott 的 j 读成英语 /dʒ/。
+    → JS 对象 {字母: base64 mp3}，替换模板的 __ALPH_AUDIO__。"""
     import json as _json
     p = os.path.join(HERE, 'alphabet_audio.json')
     d = _json.load(open(p, encoding='utf-8'))
