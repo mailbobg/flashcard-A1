@@ -29,8 +29,10 @@ OUT = os.path.join(ROOT, 'audio')
 sys.path.insert(0, HERE)
 
 # 短名 → (edge-tts 音色名, 界面上的名字)。短名同时是目录名与前端的选项值。
-# 默认只生成 Seraphina：每个音色约 25 MB，而 Vercel Hobby 单次部署上限 100 MB，
-# 多留音色会把余量吃掉，而实际背单词只会固定用一个。想要别的音色显式指定：
+# 默认只生成 Katja：纯德语语音，读孤立德语词不会像多语言语音（Seraphina）
+# 那样带英语发音（Bein → /biːn/、jott → /dʒɔt/）。每个音色约 28 MB，
+# 而 Vercel Hobby 单次部署上限 100 MB，多留音色会把余量吃掉。
+# 想要别的音色显式指定：
 #     .venv/bin/python src/make_audio.py -v conrad
 VOICES = {
     'katja':     ('de-DE-KatjaNeural',                 'Katja（女声）'),
@@ -138,7 +140,7 @@ def main():
                     help='只生成指定音色，可重复；默认全部')
     ap.add_argument('--dry-run', action='store_true')
     a = ap.parse_args()
-    picked = a.voice or ['seraphina']      # 默认只生成 Seraphina，见 VOICES 上方的说明
+    picked = a.voice or ['katja']      # 默认只生成 Katja，见 VOICES 上方的说明
 
     ts = texts()
     chars = sum(len(t) for t in ts)

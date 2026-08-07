@@ -767,11 +767,15 @@ let S = load();
    所以只要生成过就默认用它——Seraphina 优先，其次任意一个，都没有才回落系统语音。
    用户一旦在设置里手动选过（ttsPicked），这里就不再插手。 */
 function bestTts() {
+  /* 默认纯德语 Katja：Seraphina 是多语言语音，读孤立德语词会带英语发音
+     （Bein → /biːn/、jott → /dʒɔt/），学习应用里不可接受。 */
   const has = v => DATA.audio.some(a => a.v === v);
-  return has('seraphina') ? 'ms:seraphina'
+  return has('katja') ? 'ms:katja'
        : DATA.audio.length ? 'ms:' + DATA.audio[0].v : 'sys';
 }
 if (!S.set.ttsPicked) S.set.tts = bestTts();
+/* 兼容旧设置：手动选过的音色如果已被删除（如 seraphina 换成 katja），自动回落默认 */
+if (S.set.tts.startsWith('ms:') && !DATA.audio.some(a => 'ms:' + a.v === S.set.tts)) S.set.tts = bestTts();
 function load() {
   try {
     const raw = JSON.parse(localStorage.getItem(KEY) || '{}');
