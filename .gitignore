@@ -13,3 +13,4 @@ materials/*
 # 预生成的德语音频必须入库：Vercel 从 GitHub 拉代码部署，不进仓库就上不了线。
 # 三个音色约 50 MB / 4800 个文件，在 Vercel Hobby 的限额内
 # （单次部署 100 MB、15000 个文件）。
+src/letters/
