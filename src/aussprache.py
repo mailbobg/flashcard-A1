@@ -39,7 +39,7 @@ ALPHABET = [
     ["O", "oː",          "oh",        "Obst",      None],
     ["P", "peː",         "peh",       "Post",      None],
     ["Q", "kuː",         "kuh",       "Quittung",  "总是跟着 u，读 /kv/：Quittung ≈ 「克维通」"],
-    ["R", "ɛʁ",          "ehr",       "rot",       None],
+    ["R", "ɛʁ",          "err",       "rot",       None],
     ["S", "ɛs",          "ess",       "Sonne",     None],
     ["T", "teː",         "teh",       "Tag",       None],
     ["U", "uː",          "uh",        "Uhr",       None],

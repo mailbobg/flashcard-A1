@@ -812,6 +812,22 @@ function speakLocal(kind, letter, text) {
   }
   return false;
 }
+/* 点字母：先播本地字母名录音，播完自动读例词（例词走当前音源） */
+function playLetter(letter, ex) {
+  if (LA[letter]) {
+    stopSpeak();
+    const once = { used: false };
+    const after = () => { if (!once.used) { once.used = true; if (ex) say(ex); } };
+    try {
+      laAudio = new Audio('data:audio/mpeg;base64,' + LA[letter]);
+      laAudio.onended = after;
+      laAudio.onerror = after;
+      laAudio.play().catch(after);
+    } catch (e) { after(); }
+  } else if (ex) {
+    say(ex);
+  }
+}
 /* 线性图标（与 Astryx 的线条风格一致）；朗读与慢速改用手绘图标 */
 const IC = {
   spk: K.vol,
@@ -1355,11 +1371,11 @@ function renderLaut() {
 
   <div class="sec-t">字母表 · ${A.alphabet.length} 个</div>
   <div class="alpha">
-    ${A.alphabet.map(a => `<div class="ab" data-name="${esc(a.name)}" data-l="${esc(a.l)}">
+    ${A.alphabet.map(a => `<div class="ab" data-name="${esc(a.name)}" data-l="${esc(a.l)}" data-ex="${esc(a.ex)}">
       <b>${esc(a.l)}</b><i>${esc(a.ipa)}</i><s data-say="${esc(a.ex)}">${esc(a.ex)}</s></div>`).join('')}
   </div>
   <div class="tiny muted" style="margin:8px 2px 0">
-     点字母听字母名（内置本地录音，离线标准音），点下面的例词听单词。口语 Teil 1 要求拼写自己的名字，字母名本身就是考点。</div>
+     点字母先听字母名、再自动读例词（内置本地录音，离线标准音）；单独点例词只读单词。口语 Teil 1 要求拼写自己的名字，字母名本身就是考点。</div>
   ${A.alphabet.filter(a => a.tip).map(a => `<div class="ltip">
     <b>${esc(a.l)}</b><div class="tx">${esc(a.tip)}</div></div>`).join('')}
 
@@ -1388,9 +1404,9 @@ function renderLaut() {
 
   view.onclick = e => {
     const t = e.target.closest('[data-say]');
-    if (t) { say(t.dataset.say); return; }
+    if (t) { say(t.dataset.say); return; }      // 点例词：只读单词
     const ab = e.target.closest('.ab');
-    if (ab && !speakLocal('letter', ab.dataset.l)) say(ab.dataset.name);
+    if (ab) playLetter(ab.dataset.l, ab.dataset.ex);   // 点字母：字母名 → 例词
   };
 }
 
